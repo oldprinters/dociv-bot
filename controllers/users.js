@@ -11,7 +11,7 @@ class Users {
     constructor(ctx) {
 //        if(typeof ctx === 'object' && !Array.isArray(ctx) !== null){
         if(typeof ctx.from === 'object' && !Array.isArray(ctx.from) !== null){
-           console.log("users constructor ctx =", ctx.message)
+        //    console.log("users constructor ctx =", ctx.message)
             this.#tlg_user = ctx.from
             if(ctx.message?.chat.id != undefined)
                 this.#tlg_user.chat_id = ctx.message.chat.id
@@ -57,6 +57,8 @@ class Users {
         this.#role = role
     }
     //---------------------------------------
+    getRole(){return this.#role}
+    //---------------------------------------
     async readUserTlg() {
         if(this.#tlg_user?.id){
             const sql = `
@@ -69,8 +71,9 @@ class Users {
                 this.#id = user.id
                 this.#isAdmin = user.isAdmin
                 this.#active = user.active
+                this.#role = user.role
             }
-            console.log(user)
+            // console.log(user)
             return user
         } else {
             throw 'Не определен пользователь'

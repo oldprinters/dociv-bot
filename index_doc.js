@@ -2,13 +2,15 @@ import {Telegraf, Markup, Scenes, session} from "telegraf"
 import dotenv from 'dotenv'
 import firstStep from './scenes/firstStep.js'
 import selectRole from './scenes/selectRole.js'
+import inputValues from './scenes/inputValues.js'
+import selectPatient from './scenes/selectPatient.js'
 
 import * as cron from 'node-cron'
 // import { getNotesTime } from './utils.js'
 
 dotenv.config()
 
-const stage = new Scenes.Stage([firstStep, selectRole])
+const stage = new Scenes.Stage([firstStep, inputValues, selectPatient, selectRole])
 
 const bot = new Telegraf(process.env.KEY);
 bot.use(session())

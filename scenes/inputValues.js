@@ -2,15 +2,12 @@
 import {Telegraf, Markup, Scenes, session} from "telegraf"
 import Users from '../controllers/users.js'
 import VALUES from "../controllers/values.js"
+import Pressure from "../controllers/pressure.js"
 
 const inputValues = new Scenes.BaseScene('INPUT_VALUES')
 //--------------------------------------
 inputValues.enter(async ctx => {
-    const val = new VALUES(ctx, "temper")
     await ctx.reply("Введите результаты измерений:")
-    const user = new Users(ctx)
-    let us = await user.readUserTlg()
-    // console.log("us =", us)
 })
 //--------------------------------------
 inputValues.start(ctx => {
@@ -18,9 +15,12 @@ inputValues.start(ctx => {
 })
 //--------------------------------------
 inputValues.hears(/^\d{2,3}[\/\\ -\*]\d{2,3}$/, async ctx => {
-    await ctx.reply("Вы ввели давление." + ctx.match[0])
+    await ctx.reply("Вы ввели давление: " + ctx.match[0])
+    const pressure = new Pressure(ctx)
+    console.log("pressure =>", pressure)
+    pressure.setValue(ctx.match[0])
 
-    // console.log("pressure =>", ctx.match[0])
+    console.log("pressure =>", pressure.getValue())
     ctx.scene.reenter()
 })
 //--------------------------------------

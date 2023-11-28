@@ -427,7 +427,12 @@ const getNotesTime = async () => {
     const eC = new EventsClass()
     await eC.getNotes()
 }
+//--------------------------------------------
+const getRazdel = () => {
+    return /[\/\\ -\*]/
+}
 
-export { compareTime, getCronForDn, getDateBD, getDateTimeBD, getDnTime, getNotesTime, getPause, getRoleName, getSheduleToday, helpForSearch, inLesson, 
+export { getRazdel, 
+    compareTime, getCronForDn, getDateBD, getDateTimeBD, getDnTime, getNotesTime, getPause, getRoleName, getSheduleToday, helpForSearch, inLesson, 
     dayToRem, fullToRem, nHoursToRem, nMinutesToRem, nHMtoRem, dmhmToRem, tomorrowRem, everyMonth, everyYear,
     outDate, outDateTime, outSelectedDay, outShedule, outTextRem, outTime, outTimeDate, remForDay, selectDay, setCommands, sumTimes }

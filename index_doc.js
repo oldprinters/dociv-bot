@@ -6,6 +6,7 @@ import inputValues from './scenes/inputValues.js'
 import selectPatient from './scenes/selectPatient.js'
 
 import * as cron from 'node-cron'
+import Users from "./controllers/users.js"
 // import { getNotesTime } from './utils.js'
 
 dotenv.config()
@@ -18,7 +19,22 @@ bot.use(stage.middleware())
 
 bot.start(async ctx => {
     await ctx.replyWithHTML('Для понимания логики работы бота пользуйтесь подсказками\n<b>Меню -> Вызов справки</b> или /help.')
-    await ctx.scene.enter('FIRST_STEP')
+    const user = new Users(ctx)
+    await user.init()
+    let us = await user.readUserTlg()
+    if(us == undefined){
+        ctx.scene.enter('SELECT_ROLE')
+    } else {
+        console.log('user', user.getRole())
+        ctx.session.role = user.getRole()
+        ctx.session.userId = user.getUserId()
+        if(user.getRole() == "patient"){
+            ctx.scene.enter('INPUT_VALUES')
+        } else {
+            ctx.scene.enter('SELECT_PATIENT')
+        }
+    }
+    // await ctx.scene.enter('FIRST_STEP')
 });
 
 bot.on('text', async (ctx) => {

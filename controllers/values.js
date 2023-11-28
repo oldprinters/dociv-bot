@@ -1,16 +1,26 @@
 import { call_q } from '../config/query.js'
+// import Users from './users.js';
 
 class VALUES {
     #user_id;
     #id;
     #date;
-    #type;
-    constructor(ctx, id, type) {
-        console.log("ctx", ctx);
-        // this.#user_id = ctx.;
-        this.#id = id;
+    constructor(ctx) {
+        // super(ctx)
+        console.log("VALUES constructor")
+        const tlg_id = ctx.message.from.id;
+        // this.#user_id = super.getUserByTlgId(tlg_id);
         this.#date = new Date();
-        this.#type = type;
+        console.log("VALUES constructor ", tlg_id)
+        this.#user_id = ctx.session.user_id;
+        this.#id = ctx.session.id;
+        this.#date = new Date();
+        console.log("VALUES constructor ", this.#user_id, this.#id, this.#date)
+        // this.#id
+    }
+    //-----------------------------
+    async init(){
+
     }
     //-----------------------------
     get user_id() {
@@ -23,10 +33,6 @@ class VALUES {
     //-----------------------------
     get date() {
         return this.#date;
-    }
-    //-----------------------------
-    get type() {
-        return this.#type;
     }
 }
 

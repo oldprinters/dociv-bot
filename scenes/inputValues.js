@@ -17,10 +17,9 @@ inputValues.start(ctx => {
 inputValues.hears(/^\d{2,3}[\/\\ -\*]\d{2,3}$/, async ctx => {
     await ctx.reply("Вы ввели давление: " + ctx.match[0])
     const pressure = new Pressure(ctx)
-    console.log("pressure =>", pressure)
-    pressure.setValue(ctx.match[0])
-
-    console.log("pressure =>", pressure.getValue())
+    const message = pressure.setValue(ctx.match[0])
+    await ctx.reply(message)
+    console.log("pressure =>", message)
     ctx.scene.reenter()
 })
 //--------------------------------------

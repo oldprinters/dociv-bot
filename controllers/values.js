@@ -6,13 +6,9 @@ class VALUES {
     #id;
     #date;
     constructor(ctx) {
-        // super(ctx)
-        console.log("VALUES constructor")
         const tlg_id = ctx.message.from.id;
-        // this.#user_id = super.getUserByTlgId(tlg_id);
         this.#date = new Date();
-        console.log("VALUES constructor ", tlg_id)
-        this.#user_id = ctx.session.user_id;
+        this.#user_id = ctx.session.userId;
         this.#id = ctx.session.id;
         this.#date = new Date();
         console.log("VALUES constructor ", this.#user_id, this.#id, this.#date)
@@ -24,6 +20,10 @@ class VALUES {
     }
     //-----------------------------
     get user_id() {
+        return this.#user_id;
+    }
+   //-----------------------------
+    getUserId() {
         return this.#user_id;
     }
     //-----------------------------

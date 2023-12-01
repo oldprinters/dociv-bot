@@ -19,6 +19,15 @@ bot.use(stage.middleware())
 
 bot.start(async ctx => {
     await ctx.replyWithHTML('Для понимания логики работы бота пользуйтесь подсказками\n<b>Меню -> Вызов справки</b> или /help.')
+
+    if(typeof ctx === 'object' && !Array.isArray(ctx) !== null){
+            ctx.session.tlg_user_id = ctx.from.id
+            if(ctx.message?.chat.id != undefined)
+                ctx.session.chat_id = ctx.message.chat.id
+            else
+                tx.session.chat_id = ctx.chat.id
+    }
+    console.log(ctx.session)
     const user = new Users(ctx)
     await user.init()
     let us = await user.readUserTlg()

@@ -334,6 +334,10 @@ const getDateBD = (str = undefined) => {
     return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
 }
 //-------------------------------------------
+const getDateForBD = ( d ) => {
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
+}
+//-------------------------------------------
 const getDateTimeBD = (d = undefined) => {
     if(d == undefined){  
         d = new Date()
@@ -432,7 +436,7 @@ const getRazdel = () => {
     return /[\/\\ -\*]/
 }
 
-export { getRazdel, 
+export { getRazdel, getDateForBD, 
     compareTime, getCronForDn, getDateBD, getDateTimeBD, getDnTime, getNotesTime, getPause, getRoleName, getSheduleToday, helpForSearch, inLesson, 
     dayToRem, fullToRem, nHoursToRem, nMinutesToRem, nHMtoRem, dmhmToRem, tomorrowRem, everyMonth, everyYear,
     outDate, outDateTime, outSelectedDay, outShedule, outTextRem, outTime, outTimeDate, remForDay, selectDay, setCommands, sumTimes }

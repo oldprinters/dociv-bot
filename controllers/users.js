@@ -8,18 +8,18 @@ class Users {
     #isAdmin    //администратор бота
     #classes = []
     //---------------------------------------
-    constructor(ctx) {
+    constructor(tlg_user_id) {
 //        if(typeof ctx === 'object' && !Array.isArray(ctx) !== null){
-        if(typeof ctx.from === 'object' && !Array.isArray(ctx.from) !== null){
+        // if(typeof ctx.from === 'object' && !Array.isArray(ctx.from) !== null){
         //    console.log("users constructor ctx =", ctx.message)
-            this.#tlg_user = ctx.from
-            if(ctx.message?.chat.id != undefined)
-                this.#tlg_user.chat_id = ctx.message.chat.id
-            else
-                this.#tlg_user.chat_id = ctx.chat.id
-        } else {
-            throw 'id пользователя telegram не определен.'
-        }
+            this.#tlg_user = tlg_user_id
+        //     if(ctx.message?.chat.id != undefined)
+        //         this.#tlg_user.chat_id = ctx.message.chat.id
+        //     else
+        //         this.#tlg_user.chat_id = ctx.chat.id
+        // } else {
+        //     throw 'id пользователя telegram не определен.'
+        // }
         //console.log(" not OBJECT this =", this.#tlg_user)
     }
     //---------------------------------------

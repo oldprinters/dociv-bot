@@ -24,26 +24,26 @@ inputValues.hears(/^\d{2,3}[\/\\ -\*]\d{2,3}$/, async ctx => {
     const pressure = new Pressure(ctx)
     const message = await pressure.setValue(ctx, ctx.match[0])
     await ctx.reply(message)
-    const arr = await pressure.getStatistic(1)
-    await outStr(ctx, arr)
+    const arr = await pressure.getStatistic(1, 'pressure')
+    await pressure.outStr(ctx, arr)
     ctx.scene.reenter()
 })
 //--------------------------------------
 inputValues.hears(/^\d{2,3}[\/\\ -\*]\d{2,3}[\/\\ -\*]\d{2,3}$/, async ctx => {
-    await ctx.reply("Вы ввели давление и пульс." + ctx.match[0])
+    await ctx.reply("Вы ввели давление и пульс: " + ctx.match[0])
     let str = ctx.match[0].replaceAll(getRazdel(), '/')
     const pressure = new Pressure(ctx)
     // console.log("str =", str)
     // console.log("**** ", str.slice(str.lastIndexOf('/') + 1))
     let message = await pressure.setValue(ctx, str.slice(0, str.lastIndexOf('/')))
     await ctx.reply(message)
-    let arr = await pressure.getStatistic(1)
-    await outStr(ctx, arr)
+    let arr = await pressure.getStatistic(1, 'pressure')
+    await pressure.outStr(ctx, arr)
     const puls = new Puls(ctx);
     message = await puls.setValue(ctx, str.slice(str.lastIndexOf('/') + 1))
     await ctx.reply(message)
-    arr = await puls.getStatistic(1)
-    await outStr(ctx, arr)
+    arr = await puls.getStatistic(1, 'puls')
+    await puls.outStr(ctx, arr)
     ctx.scene.reenter()
 })
 //--------------------------------------
@@ -52,8 +52,8 @@ inputValues.hears(/^\d{2}[.,]\d{0,2}$/, async ctx => {
     const temper = new Temper(ctx)
     const message = await temper.setValue(ctx, ctx.match[0])
     await ctx.reply(message)
-    const arr = await temper.getStatistic(1)
-    await outStr(ctx, arr)
+    const arr = await temper.getStatistic(1, 'temper')
+    await temper.outStr(ctx, arr)
     ctx.scene.reenter()
 })
 //--------------------------------------
@@ -118,8 +118,8 @@ inputValues.action('queryPress', async ctx => {
         const pressure = new Pressure(ctx)
         pressure.delete(ctx.session.last_id, 'pressure')
         ctx.session.last_id = 0
-        const arr = await pressure.getStatistic(1)
-        await outStr(ctx, arr)
+        const arr = await pressure.getStatistic(1, 'pressure')
+        await pressure.outStr(ctx, arr)
     } else {
         await ctx.reply(errors[5])
     }
@@ -132,8 +132,8 @@ inputValues.action('queryPuls', async ctx => {
         const puls = new Puls(ctx)
         puls.delete(ctx.session.puls_last_id, 'puls')
         ctx.session.puls_last_id = 0
-        const arr = await puls.getStatistic(1)
-        await outStr(ctx, arr)
+        const arr = await puls.getStatistic(1, 'puls')
+        await puls.outStr(ctx, arr)
     } else {
         await ctx.reply(errors[5])
     }
@@ -147,8 +147,8 @@ inputValues.action('queryTemper', async ctx => {
         const temper = new Temper(ctx)
         temper.delete(ctx.session.temper_last_id, 'temper')
         ctx.session.temper_last_id = 0
-        const arr = await temper.getStatistic(1)
-        await outStr(ctx, arr)
+        const arr = await temper.getStatistic(1, 'temper')
+        await temper.outStr(ctx, arr)
     } else {
         await ctx.reply(errors[5])
     }

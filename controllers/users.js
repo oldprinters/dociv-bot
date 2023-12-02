@@ -24,18 +24,23 @@ class Users {
         //console.log(" not OBJECT this =", this.#tlg_user)
     }
     //---------------------------------------
-    async init() {
+    async init(ctx) {
         const user = await this.readUserTlg()
         if(user == undefined){
             const sql = `INSERT INTO ivdoc_bot.users (tlg_id, role) VALUES ('${this.#tlg_user.id}', '${this.#role}');`
             this.#id = (await call_q(sql)).insertId
             this.#isAdmin = false
             this.#active = 1
+            ctx.session.role = this.#role
+            ctx.session.userId = this.#id
         } else {
             this.#id = user.id
             this.#isAdmin = user.isAdmin
             this.#active = user.active
+            ctx.session.role = user.getRole()
+            ctx.session.userId = user.getUserId()
         }
+        console.log("ctx.session =", ctx.session)
         return this.#id
     }
     //---------------------------------------

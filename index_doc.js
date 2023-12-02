@@ -28,7 +28,7 @@ bot.start(async ctx => {
                 tx.session.chat_id = ctx.chat.id
     }
     const user = new Users(ctx.from.id)
-    await user.init()
+    // await user.init()
     let us = await user.readUserTlg()
     if(us == undefined){
         ctx.scene.enter('SELECT_ROLE')

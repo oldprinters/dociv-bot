@@ -62,6 +62,11 @@ inputValues.hears('list', async ctx => {
     ctx.scene.reenter()
 })
 //--------------------------------------
+inputValues.command('list', async ctx => {
+    ctx.reply("Выберите период", queryPeriodMenu())
+    ctx.scene.reenter()
+})
+//--------------------------------------
 inputValues.hears(/^del$/i, async ctx => {
         await ctx.reply("Какую последнюю запись удалить?", queryDeleteMenu())
     // else {
@@ -130,7 +135,7 @@ inputValues.action('queryPuls', async ctx => {
     await ctx.answerCbQuery('Loading')
     if(ctx.session.puls_last_id > 0){
         const puls = new Puls(ctx)
-        puls.delete(ctx.session.puls_last_id, 'puls')
+        await puls.delete(ctx.session.puls_last_id, 'puls')
         ctx.session.puls_last_id = 0
         const arr = await puls.getStatistic(1, 'puls')
         await puls.outStr(ctx, arr)

@@ -17,19 +17,21 @@ selectRole.enter(async ctx => {
 //--------------------------------------
 selectRole.action('doctor',  async ctx => {
     await ctx.answerCbQuery('Loading')
-    const user = new Users(ctx)
+    const user = new Users(ctx.from.id)
     user.setRole('doc')
-    user.init()
-    ctx.reply("Ok")
+    await user.init(ctx)
+    await ctx.reply("Ok")
+    ctx.scene.enter('SELECT_PATIENT')
     // await ctx.scene.enter('SEND_QUERY_ADMIN')
 })
 //--------------------------------------
 selectRole.action('patient',  async ctx => {
     await ctx.answerCbQuery('Loading')
-    const user = new Users(ctx)
+    const user = new Users(ctx.from.id)
     user.setRole('patient')
-    user.init()
-    ctx.reply("Ok")
+    await user.init(ctx)
+    await ctx.reply("Ok")
+    ctx.scene.enter('INPUT_VALUES')
     // await ctx.scene.enter('SEND_QUERY_ADMIN')
 })
 

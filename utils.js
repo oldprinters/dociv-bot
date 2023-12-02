@@ -424,6 +424,7 @@ const setCommands = async (ctx) => {
     await ctx.setMyCommands([
         {command: 'start', description: 'Перезапуск'}, 
         {command: 'help', description: 'Вызов справки'}, 
+        {command: 'list', description: 'Вывод данных'}, 
     ])
 }
 //--------------------------------------------
@@ -433,8 +434,10 @@ const getNotesTime = async () => {
 }
 //--------------------------------------------
 const getRazdel = () => {
-    return /[\/\\ -\*]/
+    return /[\/\\ \*]/g
 }
+//-----------------------------------------------
+    
 
 export { getRazdel, getDateForBD, 
     compareTime, getCronForDn, getDateBD, getDateTimeBD, getDnTime, getNotesTime, getPause, getRoleName, getSheduleToday, helpForSearch, inLesson, 

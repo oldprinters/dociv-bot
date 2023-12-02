@@ -27,14 +27,12 @@ bot.start(async ctx => {
             else
                 tx.session.chat_id = ctx.chat.id
     }
-    console.log(ctx.session)
-    const user = new Users(ctx)
+    const user = new Users(ctx.from.id)
     await user.init()
     let us = await user.readUserTlg()
     if(us == undefined){
         ctx.scene.enter('SELECT_ROLE')
     } else {
-        console.log('user', user.getRole())
         ctx.session.role = user.getRole()
         ctx.session.userId = user.getUserId()
         if(user.getRole() == "patient"){

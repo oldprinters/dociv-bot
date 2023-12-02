@@ -12,7 +12,8 @@ class Users {
 //        if(typeof ctx === 'object' && !Array.isArray(ctx) !== null){
         // if(typeof ctx.from === 'object' && !Array.isArray(ctx.from) !== null){
         //    console.log("users constructor ctx =", ctx.message)
-            this.#tlg_user = tlg_user_id
+        const user = {"id": tlg_user_id}
+            this.#tlg_user = user
         //     if(ctx.message?.chat.id != undefined)
         //         this.#tlg_user.chat_id = ctx.message.chat.id
         //     else

@@ -61,7 +61,7 @@ inputValues.hears('list', async ctx => {
     ctx.reply("Выберите период", queryPeriodMenu())
     ctx.scene.reenter()
 })
-//--------------------------------------
+//-------------------------------------- 
 inputValues.command('list', async ctx => {
     ctx.reply("Выберите период", queryPeriodMenu())
     ctx.scene.reenter()

@@ -425,6 +425,7 @@ const setCommands = async (ctx) => {
         {command: 'start', description: 'Перезапуск'}, 
         {command: 'help', description: 'Вызов справки'}, 
         {command: 'list', description: 'Вывод данных'}, 
+        {command: 'setup', description: 'Настройки'}
     ])
 }
 //--------------------------------------------

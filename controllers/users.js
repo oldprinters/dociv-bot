@@ -65,6 +65,19 @@ class Users {
     //---------------------------------------
     getRole(){return this.#role}
     //---------------------------------------
+    async getListByRole(role = 'doc'){
+        const sql = `
+            SELECT user_id, fio
+            FROM ivdoc_bot.users u
+            LEFT JOIN ivdoc_bot.userData d ON u.id = d.user_id
+            WHERE role = '${role}'
+            AND u.active = 1
+            AND d.active = 1
+            ;
+        `
+        return (await call_q(sql))
+    }
+    //---------------------------------------
     async readUserTlg() {
         if(this.#tlg_user?.id){
             const sql = `

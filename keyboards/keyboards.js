@@ -39,5 +39,20 @@ const queryDocPatient = () => {
         Markup.button.callback("Пациент", "patient")
     ])
 }
+//-------------------------------------------
+const querySetupMenu = () => {
+    return Markup.inlineKeyboard([
+        Markup.button.callback("Выбрать доктора", "appendDoc"),
+        Markup.button.callback("Настроить уведомления", "remembers")
+    ])
+}
+//--------------------------------------------
+const queryDocSelect = (arr) => {
+    let arrButtons = [];
+    for(let el of arr){
+        arrButtons.push(Markup.button.callback(el.fio, "docSelect" + el.user_id))
+    }
+    return Markup.inlineKeyboard(arrButtons)
+}
 
-export { queryDeleteMenu, queryDelCancelMenu, queryPeriodMenu, queryYesNoMenu, queryDocPatient }
+export { queryDeleteMenu, queryDelCancelMenu, queryDocSelect, queryPeriodMenu, queryYesNoMenu, queryDocPatient, querySetupMenu }

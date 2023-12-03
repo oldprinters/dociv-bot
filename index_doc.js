@@ -4,6 +4,8 @@ import firstStep from './scenes/firstStep.js'
 import selectRole from './scenes/selectRole.js'
 import inputValues from './scenes/inputValues.js'
 import selectPatient from './scenes/selectPatient.js'
+import setupPatient from './scenes/setupPatient.js'
+import fio_patient from "./scenes/fio_patient.js"
 
 import * as cron from 'node-cron'
 import Users from "./controllers/users.js"
@@ -11,7 +13,7 @@ import Users from "./controllers/users.js"
 
 dotenv.config()
 
-const stage = new Scenes.Stage([firstStep, inputValues, selectPatient, selectRole])
+const stage = new Scenes.Stage([firstStep, inputValues, selectPatient, selectRole, setupPatient, fio_patient])
 
 const bot = new Telegraf(process.env.KEY);
 bot.use(session())

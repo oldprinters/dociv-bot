@@ -5,7 +5,7 @@ import VALUES from "../controllers/values.js"
 import Puls from "../controllers/puls.js"
 import Pressure from "../controllers/pressure.js"
 import {outDateTime, outDate, outTimeDate, getRazdel} from "../utils.js"
-import {queryPeriodMenu, queryDeleteMenu} from "../keyboards/keyboards.js"
+import {queryPeriodMenu, queryDeleteMenu, querySetupMenu} from "../keyboards/keyboards.js"
 import Temper from "../controllers/temper.js"
 import { errors, messageOk } from '../controllers/errors.js';
 
@@ -60,6 +60,10 @@ inputValues.hears(/^\d{2}[.,]\d{0,2}$/, async ctx => {
 inputValues.hears('list', async ctx => {
     ctx.reply("Выберите период", queryPeriodMenu())
     ctx.scene.reenter()
+})
+//-------------------------------------- 
+inputValues.command('setup', async ctx => {
+    ctx.scene.enter('SETUP_PATIENT')
 })
 //-------------------------------------- 
 inputValues.command('list', async ctx => {

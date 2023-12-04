@@ -46,20 +46,6 @@ class Pressure extends VALUES {
     async outStr (ctx, arr) {
         super.outStr(ctx, arr, "Давление:\n")
     }
-    // async getStatistic(nDays = 7) {
-    //     const tD = new Date();
-    //     tD.setDate(tD.getDate() - nDays);
-    //     const sql = `SELECT val, dataTime `+
-    //                 `FROM ivdoc_bot.pressure `+
-    //                 `WHERE active = 1 AND user_id = ${this.getUserId()}  AND dataTime > '${getDateForBD(tD) + "T23:59:59"}';`
-    //     return await call_q(sql);
-    // }
-    // //------------------------
-    // async delete(id){
-    //     const sql = `DELETE FROM 'ivdoc_bot'.'pressure' WHERE ('id_pressure' = ${id});`
-    //     console.log("sql =", sql)
-    //     return await call_q(sql);
-    // }
 }
 
 export default Pressure

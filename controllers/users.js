@@ -40,7 +40,6 @@ class Users {
             ctx.session.role = user.getRole()
             ctx.session.userId = user.getUserId()
         }
-        console.log("ctx.session =", ctx.session)
         return this.#id
     }
     //---------------------------------------

@@ -15,7 +15,6 @@ setupPatient.action('appendDoc', async ctx => {
     await ctx.answerCbQuery('Loading')
     const user = new Users(ctx.session.userId)
     const list = await user.getListByRole();
-    console.log("list =", list)
     if(list.length == 0){
         ctx.reply("В системе нет зарегистрированных докторов.")
         ctx.scene.enter('INPUT_VALUES')
@@ -32,12 +31,8 @@ setupPatient.action(/^docSelect\d{1,4}$/, async ctx => {
     ctx.session.doc_id = doc_id
     const dp = new DocPatient(ctx)
     let arrDocs = await dp.getDocs()
-    console.log("arrDocs =", arrDocs)
     const ids = arrDocs.map(el => el.doc_id)
-    console.log(doc_id, ids)
-    console.log(ids.includes(doc_id))
     if(arrDocs.length == 0 || ids.includes(doc_id) === false){
-        console.log("arrDoc = ", arrDocs)
         if(await dp.appendDoc(doc_id) > 0)
             await ctx.reply("Доктор успешно привязан к пациенту.")
         else

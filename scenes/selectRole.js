@@ -34,7 +34,6 @@ selectRole.action('patient',  async ctx => {
 })
 //--------------------------------------
 selectRole.on('text', async ctx => {
-    console.log(ctx.message.text)
     ctx.session.fio =  ctx.message.text
     await ctx.reply(`Правильно ввели? Сохраняем?`, queryYesNoMenu())
 })

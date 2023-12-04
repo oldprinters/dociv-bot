@@ -1,3 +1,7 @@
+import Pressure from "./controllers/pressure.js"
+import Puls from "./controllers/puls.js"
+import Temper from "./controllers/temper.js"
+
 //-------------------------------------------
 const adminStats = async () => {
     //sql = 
@@ -438,9 +442,21 @@ const getRazdel = () => {
     return /[\/\\ \*]/g
 }
 //-----------------------------------------------
-    
+const outResults = async (ctx, nDay = 7) => {
+    ctx.session.userId = ctx.session.patient_id
+    const pressure = new Pressure(ctx)
+    let arr = await pressure.getStatistic(nDay, 'pressure')
+    await pressure.outStr(ctx, arr)
+    const puls = new Puls(ctx)
+    arr = await puls.getStatistic(nDay, 'puls')
+    await puls.outStr(ctx, arr)
+    const temper = new Temper(ctx)
+    arr = await temper.getStatistic(nDay, 'temper')
+    await temper.outStr(ctx, arr)
+    ctx.session.userId = ctx.session.doc_id
+}
 
-export { getRazdel, getDateForBD, 
+export { getRazdel, getDateForBD, outResults,
     compareTime, getCronForDn, getDateBD, getDateTimeBD, getDnTime, getNotesTime, getPause, getRoleName, getSheduleToday, helpForSearch, inLesson, 
     dayToRem, fullToRem, nHoursToRem, nMinutesToRem, nHMtoRem, dmhmToRem, tomorrowRem, everyMonth, everyYear,
     outDate, outDateTime, outSelectedDay, outShedule, outTextRem, outTime, outTimeDate, remForDay, selectDay, setCommands, sumTimes }

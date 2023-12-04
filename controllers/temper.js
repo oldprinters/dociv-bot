@@ -15,11 +15,10 @@ class Temper extends VALUES {
     }
     //-----------------------
     async setValue(ctx, str) {
-        console.log("str =", str)
+        // console.log("str =", str)
         str = str.trim().replace(',', '.');
         
         this.#value = parseFloat(str);
-        console.log("444 =>", str, " =>", this.#value)
         if(this.#value < 30 || this.#value > 45){
             return errors[4];
         } else {

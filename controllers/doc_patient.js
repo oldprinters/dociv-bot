@@ -29,7 +29,7 @@ class DocPatient {
     //-------------------
     async getPatients() {
         const patients = await call_q(
-            `SELECT dp.doc_id, fio 
+            `SELECT dp.patient_id, fio 
             FROM ivdoc_bot.doc_patient dp
             LEFT JOIN userData ud ON ud.user_id = dp.patient_id
             WHERE dp.active = 1

@@ -55,10 +55,19 @@ const queryDocSelect = (arr) => {
     return Markup.inlineKeyboard(arrButtons)
 }
 //--------------------------------------------
+const queryPatientSelect = (arr) => {
+    let arrButtons = [];
+    for(let el of arr){
+        arrButtons.push(Markup.button.callback(el.fio, "patientSelect" + el.patient_id))
+    }
+    return Markup.inlineKeyboard(arrButtons)
+}
+//--------------------------------------------
 const queryRepeat = () => {
     return Markup.inlineKeyboard([
         Markup.button.callback("Обновить", "repeatK"),
     ])
 }
 
-export { queryDeleteMenu, queryDelCancelMenu, queryDocSelect, queryPeriodMenu, queryRepeat, queryYesNoMenu, queryDocPatient, querySetupMenu }
+export { queryDeleteMenu, queryDelCancelMenu, queryDocSelect, queryPatientSelect, queryPeriodMenu, 
+        queryRepeat, queryYesNoMenu, queryDocPatient, querySetupMenu }

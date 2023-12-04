@@ -39,9 +39,10 @@ class UserData {
     //----------------------------------------
     async setFio(fio) {
         const sql = `INSERT INTO ivdoc_bot.userData (user_id, fio) VALUES (${this.#user_id}, '${fio}');`
-        const res = call_q(sql)
-        if (res.insertedId > 0) {
-            this.#id = res.insertedId
+        const res = await call_q(sql)
+        console.log("res =", res)
+        if (res.insertId > 0) {
+            this.#id = res.insertId
         } else {
             console.log("Ошибка сохранения: ", sql)
         } 

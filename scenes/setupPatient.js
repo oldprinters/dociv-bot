@@ -18,6 +18,7 @@ setupPatient.action('appendDoc', async ctx => {
     console.log("list =", list)
     if(list.length == 0){
         ctx.reply("В системе нет зарегистрированных докторов.")
+        ctx.scene.enter('INPUT_VALUES')
     } else if(list.length < 10){
         ctx.reply("В системе есть несколько зарегистрированных докторов. Выбирите.", queryDocSelect(list))
     } else {
@@ -31,6 +32,7 @@ setupPatient.action(/^docSelect\d{1,4}$/, async ctx => {
     ctx.session.doc_id = doc_id
     const dp = new DocPatient(ctx)
     let arrDocs = await dp.getDocs()
+    console.log("arrDocs =", arrDocs)
     const ids = arrDocs.map(el => el.doc_id)
     console.log(doc_id, ids)
     console.log(ids.includes(doc_id))

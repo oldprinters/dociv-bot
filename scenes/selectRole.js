@@ -46,6 +46,7 @@ selectRole.action('queryYes2', async ctx => {
     if(insertedId > 0){
         await ctx.reply("Ok")
     }
+    ctx.scene.enter('SELECT_PATIENT')
 })
 //--------------------------------------
 selectRole.action('queryNo2', async ctx => {

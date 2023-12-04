@@ -13,6 +13,10 @@ fio_patient.enter(async ctx => {
         ctx.scene.enter('FIRST_STEP')
 })
 //--------------------------------------
+fio_patient.help(ctx => {
+    ctx.replyWithHTML('Учитывая то, что программой ни кто не пользуется, можете набрать даже детское прозвище. :-)')
+})
+//--------------------------------------
 fio_patient.on('message', async ctx => {
     let patient = new UserData(ctx)
     patient.setFio(ctx.message.text)

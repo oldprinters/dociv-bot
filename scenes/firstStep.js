@@ -6,13 +6,6 @@ const firstStep = new Scenes.BaseScene('FIRST_STEP')
 //--------------------------------------
 firstStep.enter(async ctx => {
     setCommands(ctx)
-    // const user = new Users(ctx)
-    // let us = await user.readUserTlg()
-    // console.log("us =", us)
-    // if(us == undefined){
-    //     ctx.scene.enter('SELECT_ROLE')
-    // } else {
-    //     console.log("us =", us)
         if(ctx.session.role == "patient"){
             await ctx.reply("Для сохранения значений введите давление верхнее и нижнее, разделив их наклонной чертой, пульс, температуру. Значение температуры должно содержать точку или запятую.")
             ctx.scene.enter('INPUT_VALUES')

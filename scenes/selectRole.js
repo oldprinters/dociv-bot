@@ -13,6 +13,10 @@ selectRole.start(ctx => {
     ctx.scene.enter('FIRST_STEP')
 })
 //--------------------------------------
+selectRole.help( ctx => {
+    ctx.reply('Здесь всё просто. Пациент сохраняет результаты, а доктор смотрит и назначает лечение.')
+})
+//--------------------------------------
 selectRole.action('doctor',  async ctx => {
     await ctx.answerCbQuery('Loading')
     const user = new Users(ctx.from.id)

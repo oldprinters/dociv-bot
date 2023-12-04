@@ -11,6 +11,10 @@ setupPatient.enter(async ctx => {
     ctx.reply("Что настраиваем?", querySetupMenu())
 })
 //--------------------------------------
+setupPatient.help( ctx => {
+    ctx.reply('Советую выбрать знакомого доктора, если он зарегистрирован.')
+})
+//--------------------------------------
 setupPatient.action('appendDoc', async ctx => {
     await ctx.answerCbQuery('Loading')
     const user = new Users(ctx.session.userId)
@@ -39,6 +43,10 @@ setupPatient.action(/^docSelect\d{1,4}$/, async ctx => {
             await ctx.reply("Доктор не привязан к пациенту.")
     }
     ctx.scene.enter('FIO_PATIENT')
+})
+//--------------------------------------
+setupPatient.action('remembers', ctx => {
+    ctx.reply('Напоминалки пока не работают. Сделаю, если кому-нибудь будут нужны.')
 })
 //--------------------------------------
 setupPatient.on('text', ctx => {

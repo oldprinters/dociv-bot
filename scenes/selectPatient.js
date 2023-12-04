@@ -13,6 +13,10 @@ selectPatient.start(async ctx => {
     ctx.scene.reenter()
 })
 //--------------------------------------
+selectPatient.help(ctx => {
+    ctx.reply('В данной ситуации, я не могу Вам помочь, извиниите.')
+})
+//--------------------------------------
 selectPatient.enter(async ctx => {
     const dp = new DocPatient(ctx)
     const list = await dp.getPatients()

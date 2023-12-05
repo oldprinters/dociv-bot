@@ -8,7 +8,7 @@ import { queryYesNoMenu, querySetupMenu, queryDocSelect} from '../keyboards/keyb
 const setupPatient = new Scenes.BaseScene('SETUP_PATIENT')
 //--------------------------------------
 setupPatient.start( ctx => {
-    ctx.session.enter('FIRST_STEP')
+    ctx.scene.enter('FIRST_STEP')
 })
 //--------------------------------------
 setupPatient.enter(async ctx => {

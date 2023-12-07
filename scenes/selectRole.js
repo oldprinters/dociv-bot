@@ -38,8 +38,12 @@ selectRole.action('patient',  async ctx => {
 })
 //--------------------------------------
 selectRole.on('text', async ctx => {
-    ctx.session.fio =  ctx.message.text
-    await ctx.reply(`Правильно ввели? Сохраняем?`, queryYesNoMenu())
+    if(ctx.session.role != undefined){
+        ctx.session.fio =  ctx.message.text
+        await ctx.reply(`Правильно ввели? Сохраняем?`, queryYesNoMenu())
+    } else {
+        ctx.scene.reenter()
+    }
 })
 //--------------------------------------
 selectRole.action('queryYes2', async ctx => {

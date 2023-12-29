@@ -26,8 +26,10 @@ setupPatient.action('appendDoc', async ctx => {
     if(list.length == 0){
         ctx.reply("В системе нет зарегистрированных докторов.")
         ctx.scene.enter('INPUT_VALUES')
+    } else if(list.length == 1){
+        ctx.reply("В системе зарегистрирован один доктор. Если Ваш, кликайте смело.", queryDocSelect(list))
     } else if(list.length < 10){
-        ctx.reply("В системе есть несколько зарегистрированных докторов. Выбирите.", queryDocSelect(list))
+        ctx.reply("В системе есть несколько зарегистрированных докторов. Выберите Вашего.", queryDocSelect(list))
     } else {
         ctx.reply("В системе много зарегистрированных докторов. Введите фамилию желаемого врача:")
     }

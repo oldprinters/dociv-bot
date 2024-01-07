@@ -12,7 +12,22 @@ setupPatient.start( ctx => {
 })
 //--------------------------------------
 setupPatient.enter(async ctx => {
-    ctx.reply("Что настраиваем?", querySetupMenu())
+    const dp = new DocPatient(ctx)
+    const ud = new UserData(ctx)
+    const fio = await ud.getFio()
+    const docs = await dp.getDocs()
+    if(docs.length > 0){
+        let str = 'C Вами ' + (docs.length == 1? 'работает доктор ': 'работают:\n') + '<b>'
+        for(let doc of docs){
+            str += doc.fio + '\n' 
+        }
+        str += '</b>'
+        ctx.replyWithHTML(str)
+    }
+    ctx.session.fio = fio
+    ctx.session.docs = docs
+    const strFio = fio == undefined? 'Что настраиваем?': fio + ', что настраиваем?'
+    ctx.reply( strFio, querySetupMenu())
 })
 //--------------------------------------
 setupPatient.help( ctx => {
@@ -23,10 +38,22 @@ setupPatient.action('appendDoc', async ctx => {
     await ctx.answerCbQuery('Loading')
     const user = new Users(ctx.session.userId)
     const list = await user.getListByRole();
-    if(list.length == 0){
-        ctx.reply("В системе нет зарегистрированных докторов.")
-        ctx.scene.enter('INPUT_VALUES')
-    } else if(list.length == 1){
+    const diff = list.filter(el => {!ctx.session.docs.some(el2 => el2.doc_id === el.user_id)})
+    console.log("list =", list)
+    console.log("diff =", diff)
+    if(diff.length > 0){
+        let str = ''
+        str = 'C Вами ' + (list.length == 1? 'работает доктор ': 'работают:\n') + '<b>'
+        for(let doc of diff){
+            str += doc.fio + '\n' 
+        }
+        str += (diff.length == list.length? '</b>Других докторов не зарегистрировано.': '')
+        await ctx.replyWithHTML(str)
+        if(diff.length == list.length){
+            ctx.scene.enter('INPUT_VALUES')
+        }
+    } 
+    if(list.length == 1){
         ctx.reply("В системе зарегистрирован один доктор. Если Ваш, кликайте смело.", queryDocSelect(list))
     } else if(list.length < 10){
         ctx.reply("В системе есть несколько зарегистрированных докторов. Выберите Вашего.", queryDocSelect(list))
@@ -51,8 +78,10 @@ setupPatient.action(/^docSelect\d{1,4}$/, async ctx => {
     ctx.scene.enter('FIO_PATIENT')
 })
 //--------------------------------------
-setupPatient.action('remembers', ctx => {
+setupPatient.action('remembers', async ctx => {
+    await ctx.answerCbQuery('')
     ctx.reply('Напоминалки пока не работают. Сделаю, если кому-нибудь будут нужны.')
+    ctx.scene.reenter()
 })
 //--------------------------------------
 setupPatient.on('text', ctx => {

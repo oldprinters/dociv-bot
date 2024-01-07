@@ -2,10 +2,11 @@
 import {Telegraf, Markup, Scenes, session} from "telegraf"
 import { outResults } from '../utils.js'
 import DocPatient from "../controllers/doc_patient.js"
-import { queryRepeat, queryPatientSelect, queryPeriodMenu} from '../keyboards/keyboards.js'
+import { appendMedMenu, queryRepeat, queryPatientSelect, queryPeriodMenu, queryPeriodMenuNaz} from '../keyboards/keyboards.js'
 import Pressure from "../controllers/pressure.js"
 import Puls from "../controllers/puls.js"
 import Temper from "../controllers/temper.js"
+import Prescription from "../controllers/prescription.js"
 
 const selectPatient = new Scenes.BaseScene('SELECT_PATIENT')
 //--------------------------------------
@@ -35,7 +36,7 @@ selectPatient.action(/^patientSelect\d{1,4}$/, async ctx => {
     ctx.session.patient_id = patient_id
     await outResults(ctx, 1)
     ctx.session.userId = ctx.session.doc_id
-    ctx.reply("Выберите другой период: ", queryPeriodMenu())
+    await ctx.reply("Можно посмотреть другой период: ", queryPeriodMenuNaz())
 })
 //--------------------------------------------
 selectPatient.action('queryDays', async ctx => {
@@ -62,13 +63,45 @@ selectPatient.action('queryMonth', async ctx => {
     ctx.scene.reenter()
 })
 //--------------------------------------------
+selectPatient.action('prescription', async ctx => {
+    ctx.answerCbQuery('Loading')
+    ctx.scene.enter('PRESCRIPTION')
+})
+//     const pr = new Prescription(ctx.session.patient_id, ctx.session.doc_id)
+//     const listMed = await pr.list()
+//     let str = ''
+//     if(listMed.length > 0){
+//         for (let el of listMed){
+//             str += el.medName + ` <i>(${el.docFio})</i>` + '\n'
+//         }
+//     } else {
+//         str = 'Лечение не назначено.'
+//     }
+//     ctx.session.pr = pr
+//     await ctx.replyWithHTML(str, appendMedMenu())
+// })
+// //--------------------------------------------
+// selectPatient.action('appendMed', ctx => {
+//     ctx.answerCbQuery('Loading')
+//     ctx.scene.enter('PRESCRIPTION')
+// })
+// //--------------------------------------------
+// selectPatient.action('deleteMed', ctx => {
+//     ctx.answerCbQuery('Loading')
+//     ctx.scene.enter('DELETE_MED')
+// })
+//--------------------------------------------
 selectPatient.action('repeatK', ctx => {
     ctx.answerCbQuery('Loading')
     ctx.scene.reenter()
 })
 //--------------------------------------------
 selectPatient.on('message', async ctx => {
-    const {id} = ctx.message.from
+    ctx.reply('Выберите действие.')
 })
+//--------------------------------------------
+// selectPatient.on('message', async ctx => {
+//     const {id} = ctx.message.from
+// })
 
 export default selectPatient

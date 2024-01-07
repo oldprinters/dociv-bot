@@ -44,7 +44,7 @@ class Pressure extends VALUES {
     }
     //-----------------------
     async outStr (ctx, arr) {
-        super.outStr(ctx, arr, "Давление:\n")
+        await super.outStr(ctx, arr, "Давление:\n")
     }
 }
 

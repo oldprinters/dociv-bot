@@ -1,3 +1,4 @@
+import { call_q } from "./config/query.js"
 import Pressure from "./controllers/pressure.js"
 import Puls from "./controllers/puls.js"
 import Temper from "./controllers/temper.js"
@@ -455,8 +456,47 @@ const outResults = async (ctx, nDay = 7) => {
     await temper.outStr(ctx, arr)
     ctx.session.userId = ctx.session.doc_id
 }
+//------------------------------------------------
+const raz = (n) => {
+    let str = 'раз'
+    switch (n) {
+        case 2:
+        case 3:
+        case 4:
+        case '2':
+        case '3':
+        case '4':  str += 'а'; break;
+    }
+    return str
+}
+//----------------------------------------
+const sendTlgMessageLink = async (chat_id, str, link) => {
+        const text = encodeURI(str)
+        const url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`
+        return await axios.get(url, { params: {
+            'chat_id': chat_id, 
+            'text': str,
+            "parse_mode" : "markdown",
+            "reply_markup" : {
+                "inline_keyboard" : [
+                    [
+                        {
+                            "text" : "Отчет",
+                            "url" : link
+                        }
+                    ]
+                ]
+            }}
+        })
+    }
+//--------------------------------------------------------
+const getTlgIdById = async (user_id) => {
+    const sql = `SELECT tlg_id FROM users WHERE id = ${user_id};`
+    return (await call_q(sql, 'getTlgIdById'))[0].tlg_id
+}
 
 export { getRazdel, getDateForBD, outResults,
     compareTime, getCronForDn, getDateBD, getDateTimeBD, getDnTime, getNotesTime, getPause, getRoleName, getSheduleToday, helpForSearch, inLesson, 
     dayToRem, fullToRem, nHoursToRem, nMinutesToRem, nHMtoRem, dmhmToRem, tomorrowRem, everyMonth, everyYear,
-    outDate, outDateTime, outSelectedDay, outShedule, outTextRem, outTime, outTimeDate, remForDay, selectDay, setCommands, sumTimes }
+    outDate, outDateTime, outSelectedDay, outShedule, outTextRem, outTime, outTimeDate, remForDay, selectDay, setCommands, sumTimes, raz, 
+    sendTlgMessageLink, getTlgIdById }

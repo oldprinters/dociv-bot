@@ -6,6 +6,12 @@ import inputValues from './scenes/inputValues.js'
 import selectPatient from './scenes/selectPatient.js'
 import setupPatient from './scenes/setupPatient.js'
 import fio_patient from "./scenes/fio_patient.js"
+import prescription from "./scenes/prescription.js"
+import med_period from "./scenes/med_period.js"
+import med_period_kd from "./scenes/med_period_kd.js"
+import delete_med from './scenes/delete_med.js'
+import inp_note from './scenes/inp_note.js'
+import append_med from "./scenes/append_med.js"
 
 import * as cron from 'node-cron'
 import Users from "./controllers/users.js"
@@ -13,7 +19,8 @@ import Users from "./controllers/users.js"
 
 dotenv.config()
 
-const stage = new Scenes.Stage([firstStep, inputValues, selectPatient, selectRole, setupPatient, fio_patient])
+const stage = new Scenes.Stage([firstStep, inputValues, selectPatient, selectRole, setupPatient, 
+    fio_patient, prescription, med_period, med_period_kd, delete_med, inp_note, append_med])
 
 const bot = new Telegraf(process.env.KEY);
 bot.use(session())

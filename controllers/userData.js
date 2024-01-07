@@ -12,12 +12,16 @@ class UserData {
         this.#user_id = ctx.session.userId
     }
     //----------------------------------------
+    setUserId(user_id){
+        this.#user_id = user_id
+    }
+    //----------------------------------------
     async readUserData() {
         if(this.#user_id > 0){
             const userData = await call_q(
                 `SELECT * FROM userData WHERE user_id = ${this.#user_id}`
                 )
-            if (userData.length === 0) {
+            if (userData.length == 0) {
                 this.#fio = undefined
             } else {
                 this.#id = userData[0].id
@@ -32,8 +36,8 @@ class UserData {
     }
     //----------------------------------------
     async getFio() {
-        if(this.#id == undefined)
-            this.readUserData()
+        if(this.#fio == undefined)
+            await this.readUserData()
         return this.#fio
     }
     //----------------------------------------

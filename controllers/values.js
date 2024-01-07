@@ -63,6 +63,8 @@ class VALUES {
             }
             strOut += '</pre>'
             await ctx.replyWithHTML(strOut)
+        } else {
+            await ctx.replyWithHTML(`${head}<i>Данные не вводились.</i>`)
         }
     }
 }

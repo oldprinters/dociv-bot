@@ -39,8 +39,6 @@ setupPatient.action('appendDoc', async ctx => {
     const user = new Users(ctx.session.userId)
     const list = await user.getListByRole();
     const diff = list.filter(el => {!ctx.session.docs.some(el2 => el2.doc_id === el.user_id)})
-    console.log("list =", list)
-    console.log("diff =", diff)
     if(diff.length > 0){
         let str = ''
         str = 'C Вами ' + (list.length == 1? 'работает доктор ': 'работают:\n') + '<b>'

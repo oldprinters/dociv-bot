@@ -475,10 +475,9 @@ const saveToFile = async (ats, fName, str) => {
     doc.setFontSize(11)
     const arrStr = str.split('\n')
     console.log("arrStr =", arrStr)
-    let nStr = 0
     let nPage = 0
     while(arrStr.length > 0){
-        doc.text(arrStr.splice(0, 50).join('\n'), 20, 20 + (nPage == 0? 40: 0))
+        doc.text(arrStr.splice(0, 50 + (nPage > 0? 10: 0)).join('\n'), 20, 20 + (nPage == 0? 20: 0))
         nPage += 1
         doc.addPage()
     }

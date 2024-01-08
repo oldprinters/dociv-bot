@@ -39,7 +39,7 @@ setupPatient.action('appendDoc', async ctx => {
     await ctx.answerCbQuery('Loading')
     const user = new Users(ctx.session.userId)
     const list = await user.getListByRole();
-    const diff = list.filter(el => {!ctx.session.docs.some(el2 => el2.doc_id === el.user_id)})
+    const diff = list.filter(el => ctx.session.docs.some(el2 => el2.doc_id == el.user_id))
     if(diff.length > 0){
         let str = ''
         str = 'C Вами ' + (list.length == 1? 'работает доктор ': 'работают:\n') + '<b>'
@@ -49,8 +49,9 @@ setupPatient.action('appendDoc', async ctx => {
         str += (diff.length == list.length? '</b>Других докторов не зарегистрировано.': '')
         await ctx.replyWithHTML(str)
         if(diff.length == list.length){
-            ctx.scene.enter('INPUT_VALUES')
-        }
+            await ctx.scene.enter('INPUT_VALUES')
+            return
+        } 
     } 
     if(list.length == 1){
         ctx.reply("В системе зарегистрирован один доктор. Если Ваш, кликайте смело.", queryDocSelect(list))
@@ -66,6 +67,7 @@ setupPatient.action(/^docSelect\d{1,4}$/, async ctx => {
     const doc_id = parseInt(ctx.match[0].slice(9))
     ctx.session.doc_id = doc_id
     const dp = new DocPatient(ctx)
+
     let arrDocs = await dp.getDocs()
     const ids = arrDocs.map(el => el.doc_id)
     if(arrDocs.length == 0 || ids.includes(doc_id) === false){
@@ -73,8 +75,11 @@ setupPatient.action(/^docSelect\d{1,4}$/, async ctx => {
             await ctx.reply("Доктор успешно привязан к пациенту.")
         else
             await ctx.reply("Доктор не привязан к пациенту.")
+        ctx.scene.enter('FIO_PATIENT')
+    } else {
+        ctx.reply('Доктор не может быть подключен к Вашей записи.')
+        ctx.scene.reenter()
     }
-    ctx.scene.enter('FIO_PATIENT')
 })
 //--------------------------------------
 setupPatient.action('downloadData', async ctx => {

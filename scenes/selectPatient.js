@@ -2,11 +2,12 @@
 import {Telegraf, Markup, Scenes, session} from "telegraf"
 import { outResults, outResultsFile } from '../utils.js'
 import DocPatient from "../controllers/doc_patient.js"
-import { queryYesNoMenu, queryRepeat, queryPatientSelect, queryPeriodMenuNaz} from '../keyboards/keyboards.js'
+import { queryYesNoMenu, queryYesNoMenu1, queryRepeat, queryPatientSelect, queryPeriodMenuNaz, queryDocDeletePatient} from '../keyboards/keyboards.js'
 import Pressure from "../controllers/pressure.js"
 import Puls from "../controllers/puls.js"
 import Temper from "../controllers/temper.js"
 import Prescription from "../controllers/prescription.js"
+import UserData from "../controllers/userData.js"
 
 const selectPatient = new Scenes.BaseScene('SELECT_PATIENT')
 //--------------------------------------
@@ -84,6 +85,37 @@ selectPatient.action('prescription', async ctx => {
 //--------------------------------------------
 selectPatient.action('repeatK', ctx => {
     ctx.answerCbQuery('Loading')
+    ctx.scene.reenter()
+})
+//--------------------------------------------
+selectPatient.command('setup', async ctx => {
+    if(ctx.session?.patient_id > 0){
+        ctx.reply('Выберите действие.', queryDocDeletePatient())
+    } else {
+        ctx.scene.reenter()
+    }
+})
+//--------------------------------------------
+selectPatient.action('docDeletePatient', async ctx => {
+    ctx.answerCbQuery()
+    const ud = new UserData(ctx)
+    ud.setUserId(ctx.session.patient_id)
+    const fio = await ud.getFio()
+    ctx.reply(`Вы уверены, что хотите онключить пациента ${fio}?`, queryYesNoMenu1())
+})
+//--------------------------------------------
+selectPatient.action('queryYes1', async ctx => {
+    await ctx.answerCbQuery('Loading')
+    const dp = new DocPatient(ctx)
+    if(await dp.deletePatient(ctx.session.doc_id, ctx.session.patient_id))
+        ctx.reply('Пациент отключен.')
+    else
+        ctx.reply('Ошибка при отключении. сообщите разработчику.')
+    ctx.scene.reenter()
+})
+//--------------------------------------------
+selectPatient.action('queryNo1', async ctx => {
+    await ctx.answerCbQuery()
     ctx.scene.reenter()
 })
 //--------------------------------------------

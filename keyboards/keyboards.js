@@ -65,6 +65,12 @@ const queryDocPatient = () => {
         Markup.button.callback("Пациент", "patient")
     ])
 }
+//------------------------------------------
+const queryDocDeletePatient = () => {
+    return Markup.inlineKeyboard([
+        Markup.button.callback("Отключить пациента", "docDeletePatient"),
+    ])
+}
 //-------------------------------------------
 const querySetupMenu = () => {
     return Markup.inlineKeyboard([
@@ -114,4 +120,4 @@ const queryRepeat = () => {
 
 export { appendMedMenu, queryDeleteMenu, queryDelCancelMenu, queryDocSelect, queryMedicamentSelectMenu, queryMedicamentDeleteMenu,
         queryPatientSelect, queryPeriodMenu, queryPeriodMenuNaz,
-        queryRepeat, queryYesNoMenu, queryYesNoMenu1, queryDocPatient, querySetupMenu }
+        queryRepeat, queryYesNoMenu, queryYesNoMenu1, queryDocPatient, querySetupMenu, queryDocDeletePatient }

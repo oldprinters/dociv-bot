@@ -47,7 +47,12 @@ class DocPatient {
         );
         return docs.insertId;
     }
-        //-------------------
+    //-------------------
+    async deletePatient(doc_id, patient_id){
+        const sql = `UPDATE doc_patient SET active = 0 WHERE doc_id = ${doc_id} AND patient_id = ${patient_id};`
+        const res = await call_q(sql, 'doc_patient / deletePatient')
+        return res.affectedRows
+    }
 }
 
 export default DocPatient;

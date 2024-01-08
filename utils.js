@@ -477,9 +477,9 @@ const saveToFile = async (ats, fName, str) => {
     console.log("arrStr =", arrStr)
     let nPage = 0
     while(true){
-        doc.text(arrStr.splice(0, 50 + (nPage > 0? 10: 0)).join('\n'), 20, 20 + (nPage == 0? 20: 0))
+        doc.text(arrStr.splice(0, 50 + (nPage > 0? 20: 0)).join('\n'), 20, 20 + (nPage == 0? 20: 0))
         nPage += 1
-        if(arrStr.length > 0)
+        if(arrStr.length == 0)
             break
         doc.addPage()
     }

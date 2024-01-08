@@ -1,8 +1,8 @@
 //selectPatient.js
 import {Telegraf, Markup, Scenes, session} from "telegraf"
-import { outResults } from '../utils.js'
+import { outResults, outResultsFile } from '../utils.js'
 import DocPatient from "../controllers/doc_patient.js"
-import { appendMedMenu, queryRepeat, queryPatientSelect, queryPeriodMenu, queryPeriodMenuNaz} from '../keyboards/keyboards.js'
+import { queryYesNoMenu, queryRepeat, queryPatientSelect, queryPeriodMenuNaz} from '../keyboards/keyboards.js'
 import Pressure from "../controllers/pressure.js"
 import Puls from "../controllers/puls.js"
 import Temper from "../controllers/temper.js"
@@ -26,6 +26,20 @@ selectPatient.enter(async ctx => {
     } else {
         ctx.reply('У Вас пока отсутствуют пациенты.', queryRepeat())
     }
+})
+//--------------------------------------------
+selectPatient.command('list', async ctx => {
+    ctx.reply('Сохранить данные пациента в файл?', queryYesNoMenu())
+})
+//--------------------------------------------
+selectPatient.action('queryYes2', async ctx => {
+    await ctx.answerCbQuery('Loading')
+    outResultsFile(ctx)
+})
+//--------------------------------------------
+selectPatient.action('queryNo2', async ctx => {
+    await ctx.answerCbQuery()
+    ctx.scene.reenter()
 })
 //--------------------------------------------
 selectPatient.action(/^patientSelect\d{1,4}$/, async ctx => {
@@ -67,29 +81,6 @@ selectPatient.action('prescription', async ctx => {
     ctx.answerCbQuery('Loading')
     ctx.scene.enter('PRESCRIPTION')
 })
-//     const pr = new Prescription(ctx.session.patient_id, ctx.session.doc_id)
-//     const listMed = await pr.list()
-//     let str = ''
-//     if(listMed.length > 0){
-//         for (let el of listMed){
-//             str += el.medName + ` <i>(${el.docFio})</i>` + '\n'
-//         }
-//     } else {
-//         str = 'Лечение не назначено.'
-//     }
-//     ctx.session.pr = pr
-//     await ctx.replyWithHTML(str, appendMedMenu())
-// })
-// //--------------------------------------------
-// selectPatient.action('appendMed', ctx => {
-//     ctx.answerCbQuery('Loading')
-//     ctx.scene.enter('PRESCRIPTION')
-// })
-// //--------------------------------------------
-// selectPatient.action('deleteMed', ctx => {
-//     ctx.answerCbQuery('Loading')
-//     ctx.scene.enter('DELETE_MED')
-// })
 //--------------------------------------------
 selectPatient.action('repeatK', ctx => {
     ctx.answerCbQuery('Loading')

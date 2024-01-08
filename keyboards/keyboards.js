@@ -68,8 +68,9 @@ const queryDocPatient = () => {
 //-------------------------------------------
 const querySetupMenu = () => {
     return Markup.inlineKeyboard([
-        Markup.button.callback("Выбрать доктора", "appendDoc"),
-        Markup.button.callback("Настроить уведомления", "remembers")
+        [Markup.button.callback("Выбрать доктора", "appendDoc"),
+        Markup.button.callback("Настроить уведомления", "remembers")],
+        [Markup.button.callback("Скачать историю данных", "downloadData")]
     ])
 }
 //--------------------------------------------

@@ -1,13 +1,13 @@
 //prescription.js
 import {Telegraf, Markup, Scenes, session} from "telegraf"
 import { jsPDF } from "jspdf"
+import * as fs from 'fs/promises'
+import axios from 'axios'
 import {font} from '../fonts/times-normal.js'
 import Prescription from "../controllers/prescription.js"
 import { appendMedMenu, queryRepeat, queryPatientSelect, queryPeriodMenu, queryPeriodMenuNaz} from '../keyboards/keyboards.js'
 import UserData from "../controllers/userData.js"
 import { raz, outDateTime, getTlgIdById } from "../utils.js";
-import * as fs from 'fs/promises'
-import axios from 'axios'
 
 const prescription = new Scenes.BaseScene('PRESCRIPTION')
 //--------------------------------------

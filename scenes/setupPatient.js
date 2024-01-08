@@ -4,6 +4,7 @@ import Users from '../controllers/users.js'
 import UserData from "../controllers/userData.js"
 import DocPatient from "../controllers/doc_patient.js"
 import { queryYesNoMenu, querySetupMenu, queryDocSelect} from '../keyboards/keyboards.js'
+import { outResultsFile } from "../utils.js"
 
 const setupPatient = new Scenes.BaseScene('SETUP_PATIENT')
 //--------------------------------------
@@ -74,6 +75,11 @@ setupPatient.action(/^docSelect\d{1,4}$/, async ctx => {
             await ctx.reply("Доктор не привязан к пациенту.")
     }
     ctx.scene.enter('FIO_PATIENT')
+})
+//--------------------------------------
+setupPatient.action('downloadData', async ctx => {
+    await ctx.answerCbQuery('')
+    outResultsFile(ctx)
 })
 //--------------------------------------
 setupPatient.action('remembers', async ctx => {

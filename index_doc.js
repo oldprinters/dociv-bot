@@ -45,6 +45,7 @@ bot.start(async ctx => {
         ctx.session.role = user.getRole()
         ctx.session.userId = user.getUserId()
         if(user.getRole() == "patient"){
+            ctx.session.patient_id = user.getUserId()
             ctx.scene.enter('INPUT_VALUES')
         } else {
             ctx.scene.enter('SELECT_PATIENT')

@@ -38,7 +38,7 @@ class Temper extends VALUES {
     }
     //-----------------------
     async outStr (ctx, arr) {
-        super.outStr(ctx, arr, "Температура:\n")
+        await super.outStr(ctx, arr, "Температура:\n")
     }
     //-----------------------
     // async getStatistic(nDays = 7) {

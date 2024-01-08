@@ -2,11 +2,12 @@ import { call_q } from "./config/query.js"
 import Pressure from "./controllers/pressure.js"
 import Puls from "./controllers/puls.js"
 import Temper from "./controllers/temper.js"
+import { jsPDF } from "jspdf"
+import * as fs from 'fs/promises'
+import {font} from './fonts/times-normal.js'
+import {font_m} from './fonts/NotoMono-Regular-normal.js'
+import UserData from "./controllers/userData.js"
 
-//-------------------------------------------
-const adminStats = async () => {
-    //sql = 
-}
 //-------------------------------------------
 const helpForSearch = (ctx) => {
     let text = ''
@@ -456,6 +457,72 @@ const outResults = async (ctx, nDay = 7) => {
     await temper.outStr(ctx, arr)
     ctx.session.userId = ctx.session.doc_id
 }
+//-----------------------------------------------
+const saveToFile = async (ats, fName, str) => {
+    const doc = new jsPDF()
+    doc.addFileToVFS('times-normal.ttf', font);
+    doc.addFont('times-normal.ttf', 'times', 'normal');
+    doc.addFileToVFS('NotoMono-Regular-normal.ttf', font_m);
+    doc.addFont('NotoMono-Regular-normal.ttf', 'NotoMono-Regular', 'normal');
+    doc.setFont('times')
+    doc.setFontSize(24)
+    doc.text("Вывод сохраненных данных", 20, 15)
+    doc.setFontSize(12)
+    doc.text(outDateTime(new Date), 160, 15)
+    doc.setFontSize(14)
+    doc.text(`Пациент: ${ats.patient_name}`, 20, 25)
+    doc.setFont('NotoMono-Regular')
+    doc.setFontSize(11)
+    doc.text(str, 20, 40)
+    // let y = 40
+    doc.save(fName)
+}
+//-----------------------------------------------
+const outResultsFile = async (ctx, nDay = 0) => {
+    const ud = new UserData(ctx)
+    const fName = `./prescriptions/list_${ctx.session.patient_id}.pdf`
+
+    let ats = { 
+        patient_id: ctx.session.patient_id,
+        // doc_name: await ud.getFio(),
+        // doc_id: ctx.session.doc_id 
+    }
+    ud.setUserId(ctx.session.patient_id)
+    ats.patient_name = await ud.readUserData()
+
+    const tId = ctx.session.userId
+    ctx.session.userId = ctx.session.patient_id
+    let str = 'Результаты измерений за весь период\n\n'
+
+    const pressure = new Pressure(ctx)
+    let arr = await pressure.getStatistic(nDay, 'pressure')
+    if(arr.length > 0)
+        str += await pressure.outArr(arr, 'Давление:\n\n')
+    else
+        str += '\n\nДанные давления не вводились.\n\n'
+
+    const puls = new Puls(ctx)
+    arr = await puls.getStatistic(nDay, 'puls')
+    if(arr.length > 0)
+        str += await puls.outArr(arr, '\n\nПульс:\n\n')
+    else
+        str += '\n\nДанные пульса не вводились.\n\n'
+
+    const temper = new Temper(ctx)
+    arr = await temper.getStatistic(nDay, 'temper')
+    if(arr.length > 0)
+        str += await temper.outArr(arr, '\n\nТемпература:\n\n')
+    else
+        str += '\n\nДанные температуры не вводились.\n'
+    ctx.session.userId = tId
+
+    saveToFile(ats, fName, str)
+
+    const file = await fs.readFile(fName)
+    await ctx.sendDocument({ source: fName, filename: fName, caption: 'Сохраните Ваши данные измерений.' })
+
+    return str
+}
 //------------------------------------------------
 const raz = (n) => {
     let str = 'раз'
@@ -499,4 +566,4 @@ export { getRazdel, getDateForBD, outResults,
     compareTime, getCronForDn, getDateBD, getDateTimeBD, getDnTime, getNotesTime, getPause, getRoleName, getSheduleToday, helpForSearch, inLesson, 
     dayToRem, fullToRem, nHoursToRem, nMinutesToRem, nHMtoRem, dmhmToRem, tomorrowRem, everyMonth, everyYear,
     outDate, outDateTime, outSelectedDay, outShedule, outTextRem, outTime, outTimeDate, remForDay, selectDay, setCommands, sumTimes, raz, 
-    sendTlgMessageLink, getTlgIdById }
+    sendTlgMessageLink, getTlgIdById, outResultsFile }

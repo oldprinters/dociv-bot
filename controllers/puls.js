@@ -35,7 +35,7 @@ class Puls extends VALUES {
     }
     //-----------------------
     async outStr (ctx, arr) {
-        super.outStr(ctx, arr, "Пульс:\n")
+        await super.outStr(ctx, arr, "Пульс:\n")
     }
     // //-----------------------
     // async getStatistic(nDays = 7) {

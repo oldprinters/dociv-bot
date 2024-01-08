@@ -473,8 +473,15 @@ const saveToFile = async (ats, fName, str) => {
     doc.text(`Пациент: ${ats.patient_name}`, 20, 25)
     doc.setFont('NotoMono-Regular')
     doc.setFontSize(11)
-    doc.text(str, 20, 40)
-    // let y = 40
+    const arrStr = str.split('\n')
+    console.log("arrStr =", arrStr)
+    let nStr = 0
+    let nPage = 0
+    while(arrStr.length > 0){
+        doc.text(arrStr.splice(0, 50).join('\n'), 20, 20 + (nPage == 0? 40: 0))
+        nPage += 1
+        doc.addPage()
+    }
     doc.save(fName)
 }
 //-----------------------------------------------

@@ -474,7 +474,6 @@ const saveToFile = async (ats, fName, str) => {
     doc.setFont('NotoMono-Regular')
     doc.setFontSize(11)
     const arrStr = str.split('\n')
-    console.log("arrStr =", arrStr)
     let nPage = 0
     while(true){
         doc.text(arrStr.splice(0, 55 + (nPage > 0? 5: 0)).join('\n'), 20, 20 + (nPage == 0? 20: 0))

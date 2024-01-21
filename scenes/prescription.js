@@ -20,11 +20,10 @@ prescription.help(ctx => {
 })
 //--------------------------------------
 prescription.enter(async ctx => {
-    if(ctx.session.pr == undefined){
-        ctx.session.pr = new Prescription(ctx.session.patient_id, ctx.session.doc_id)
-    } else {
-        ctx.session.pr.clear()
+    if(ctx.session.pr != undefined){
+        delete ctx.session.pr
     }
+    ctx.session.pr = new Prescription(ctx.session.patient_id, ctx.session.doc_id)
     const listMed = await ctx.session.pr.list()
     let str = ''
     if(listMed.length > 0){
@@ -66,7 +65,7 @@ prescription.action('saveToPDFMed', async ctx => {
         doc.text(`Препарат: ${el.medName}`, 20, y)
         doc.setFontSize(10)
         const kd = el.kd == 1? 'каждый': `на ${el.kd}`
-        doc.text(`\nПринимать ${kd} день\n${el.krd} ${raz(el.krd)} в день${el.note.length == 0? '': ', ' + el.note}.\n`, 20, y)
+        doc.text(`\nПринимать ${kd} день\n${el.krd} ${raz(el.krd)} в день${el.note.length == 0? '': ', ' + el.note}.`, 20, y)
         y += 18
     }
     const fName = `./prescriptions/pr_${ctx.session.patient_id}.pdf`

@@ -34,7 +34,7 @@ bot.start(async ctx => {
             if(ctx.message?.chat.id != undefined)
                 ctx.session.chat_id = ctx.message.chat.id
             else
-                tx.session.chat_id = ctx.chat.id
+                ctx.session.chat_id = ctx.chat.id
     }
     const user = new Users(ctx.from.id)
     // await user.init()

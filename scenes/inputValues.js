@@ -55,6 +55,16 @@ inputValues.hears(/^\d{2,3}[\/\\ -\*]\d{2,3}[\/\\ -\*]\d{2,3}$/, async ctx => {
     ctx.scene.reenter()
 })
 //--------------------------------------
+inputValues.hears(/^\d{2,3}$/, async ctx => {
+    await ctx.reply("Вы ввели пульс: " + ctx.match[0])
+    const puls = new Puls(ctx);
+    let message = await puls.setValue(ctx, ctx.match[0])
+    await ctx.reply(message)
+    let arr = await puls.getStatistic(1, 'puls')
+    await puls.outStr(ctx, arr)
+    ctx.scene.reenter()
+})
+//--------------------------------------
 inputValues.hears(/^\d{2}[.,]\d{0,2}$/, async ctx => {
     await ctx.reply("Вы ввели температуру: " + ctx.match[0])
     const temper = new Temper(ctx)

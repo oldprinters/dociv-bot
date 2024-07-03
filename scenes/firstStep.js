@@ -4,6 +4,10 @@ import { setCommands } from '../utils.js'
 
 const firstStep = new Scenes.BaseScene('FIRST_STEP')
 //--------------------------------------
+setupPatient.start( ctx => {
+    ctx.scene.reenter()
+})
+//--------------------------------------
 firstStep.enter(async ctx => {
     setCommands(ctx)
         if(ctx.session.role == "patient"){

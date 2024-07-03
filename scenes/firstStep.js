@@ -4,7 +4,7 @@ import { setCommands } from '../utils.js'
 
 const firstStep = new Scenes.BaseScene('FIRST_STEP')
 //--------------------------------------
-setupPatient.start( ctx => {
+firstStep.start( ctx => {
     ctx.scene.reenter()
 })
 //--------------------------------------

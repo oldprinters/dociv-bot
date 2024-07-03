@@ -8,7 +8,7 @@ import { outResultsFile } from "../utils.js"
 
 const setupPatient = new Scenes.BaseScene('SETUP_PATIENT')
 //--------------------------------------
-setupPatient.start( ctx => {
+setupPatient.start(ctx => {
     ctx.scene.enter('FIRST_STEP')
 })
 //--------------------------------------

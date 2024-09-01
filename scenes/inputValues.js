@@ -143,8 +143,8 @@ inputValues.action('queryPress', async ctx => {
     await ctx.answerCbQuery('Loading')
     if(ctx.session.press_last_id > 0){
         const pressure = new Pressure(ctx)
-        pressure.delete(ctx.session.last_id, 'pressure')
-        ctx.session.last_id = 0
+        pressure.delete(ctx.session.press_last_id, 'pressure')
+        ctx.session.press_last_id = 0
         const arr = await pressure.getStatistic(1, 'pressure')
         await pressure.outStr(ctx, arr)
     } else {

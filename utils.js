@@ -445,17 +445,21 @@ const getRazdel = () => {
 }
 //-----------------------------------------------
 const outResults = async (ctx, nDay = 7) => {
-    ctx.session.userId = ctx.session.patient_id
-    const pressure = new Pressure(ctx)
-    let arr = await pressure.getStatistic(nDay, 'pressure')
-    await pressure.outStr(ctx, arr)
-    const puls = new Puls(ctx)
-    arr = await puls.getStatistic(nDay, 'puls')
-    await puls.outStr(ctx, arr)
-    const temper = new Temper(ctx)
-    arr = await temper.getStatistic(nDay, 'temper')
-    await temper.outStr(ctx, arr)
-    ctx.session.userId = ctx.session.doc_id
+    if(ctx.session.patient_id > 0) {
+        ctx.session.userId = ctx.session.patient_id
+        const pressure = new Pressure(ctx)
+        let arr = await pressure.getStatistic(nDay, 'pressure')
+        await pressure.outStr(ctx, arr)
+        const puls = new Puls(ctx)
+        arr = await puls.getStatistic(nDay, 'puls')
+        await puls.outStr(ctx, arr)
+        const temper = new Temper(ctx)
+        arr = await temper.getStatistic(nDay, 'temper')
+        await temper.outStr(ctx, arr)
+        ctx.session.userId = ctx.session.doc_id
+    } else {
+        ctx.reply('Не выбран пациент.')
+    }
 }
 //-----------------------------------------------
 const saveToFile = async (ats, fName, str) => {

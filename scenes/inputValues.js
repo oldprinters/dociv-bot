@@ -183,7 +183,7 @@ inputValues.action('queryTemper', async ctx => {
 })
 //--------------------------------------
 inputValues.on('text', async ctx => {
-    await ctx.reply("????? text")
+    await ctx.replyWithHTML("Прочитайте справку, выбрав пункт меню или командой /help.\nВводить нужно <b>только числа</b>.")
     ctx.scene.reenter()
 })
 

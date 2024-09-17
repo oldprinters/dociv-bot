@@ -40,16 +40,20 @@ class VALUES {
     }
     //-----------------------
     async getStatistic(nDays = 7, table_name) {
-        let whDays = ''
-        if(nDays > 0){
-            const tD = new Date();
-            tD.setDate(tD.getDate() - nDays);
-            whDays = `AND dataTime > '${getDateForBD(tD) + "T23:59:59"}';` //"T23:59:59" может T00:00:00 ?????
+        if(this.#user_id > 0){
+            let whDays = ''
+            if(nDays > 0){
+                const tD = new Date();
+                tD.setDate(tD.getDate() - nDays);
+                whDays = `AND dataTime > '${getDateForBD(tD) + "T23:59:59"}';` //"T23:59:59" может T00:00:00 ?????
+            }
+            const sql = `SELECT val, dataTime
+                        FROM ivdoc_bot.${table_name}
+                        WHERE active = 1 AND user_id = ${this.getUserId()}  ${whDays}`
+            return await call_q(sql, `getStatistic: ${sql}`);
+        } else {
+            return []
         }
-        const sql = `SELECT val, dataTime `+
-                    `FROM ivdoc_bot.${table_name} `+
-                    `WHERE active = 1 AND user_id = ${this.getUserId()}  ${whDays}`
-        return await call_q(sql);
     }
     //--------------------------------------------
     outArr (arr, head) {

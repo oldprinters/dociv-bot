@@ -12,6 +12,10 @@ setupPatient.start(ctx => {
     ctx.scene.enter('FIRST_STEP')
 })
 //--------------------------------------
+setupPatient.command('setup', ctx => {
+    ctx.scene.enter('FIRST_STEP')
+})
+//--------------------------------------
 setupPatient.enter(async ctx => {
     const dp = new DocPatient(ctx)
     const ud = new UserData(ctx)
@@ -95,6 +99,7 @@ setupPatient.action('remembers', async ctx => {
 //--------------------------------------
 setupPatient.on('text', ctx => {
     console.log("ctx =", ctx.message.text)
+    ctx.scene.reenter()
 })
 
 export default setupPatient

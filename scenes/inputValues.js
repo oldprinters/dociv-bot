@@ -1,7 +1,7 @@
 //inputValues.js
 import {Telegraf, Markup, Scenes, session} from "telegraf"
-import Users from '../controllers/users.js'
-import VALUES from "../controllers/values.js"
+//import Users from '../controllers/users.js'
+import Health from "../controllers/health.js";
 import Puls from "../controllers/puls.js"
 import Pressure from "../controllers/pressure.js"
 import {outDateTime, outDate, outTimeDate, getRazdel} from "../utils.js"
@@ -64,6 +64,46 @@ inputValues.hears(/^\d{2,3}$/, async ctx => {
     await puls.outStr(ctx, arr)
     ctx.scene.reenter()
 })
+//---------------------------------------
+inputValues.hears(/^[*]+$/, async ctx => {
+    const val = ctx.match[0]? ctx.match[0].length : 0;
+    const health = new Health(ctx);
+    const lastDate = await health.getLastDate()
+    let d = new Date(lastDate.date)
+    const dN = new Date()
+    const dT = (dN - d)/3600000 //период в часах
+    if(((dT > 2) && (val != lastDate.val)) || (dT > 5)){
+        let text = `Вы ввели показатель общего состояния: ${val} `
+        if (val == 1) {
+            text += '\n...Вам так плохо... '
+            const aver = await health.getAverage();
+            const count = await health.getCount();
+            if(count > 2) {
+                if(aver > 2.50) 
+                    text += `\nСкоро будет улучшение. Это временно, желаю Вам благополучия! `
+                else
+                    text += `Наберитесь терпения. Все плохое заканчивается. Не теряйте надежду. `
+            }
+        }
+        if(val > 5){
+            text += '\n<b>Ура!!!</b>    :-)    я счастлив вместе с Вами!!!'
+        }
+        await ctx.replyWithHTML(text)
+        try {
+            await health.setValue(ctx, val)
+        } catch (e) {
+            console.log(`Ввод состояния пациента. Ошибка: ${e.message}`)
+        }
+        setTimeout(() => {
+            ctx.scene.reenter();
+        }, val == 1? 1500: 10);
+    } else {
+        await ctx.reply("Вы ввели показатель общего состояния.")
+        setTimeout(() => {
+            ctx.scene.reenter();
+        }, 15000);
+    }
+})
 //--------------------------------------
 inputValues.hears(/^\d{2}[.,]\d{0,2}$/, async ctx => {
     await ctx.reply("Вы ввели температуру: " + ctx.match[0])
@@ -108,6 +148,9 @@ inputValues.action('queryDays', async ctx => {
     const temper = new Temper(ctx)
     arr = await temper.getStatistic(3, 'temper')
     await temper.outStr(ctx, arr)
+    const health = new Health(ctx)
+    arr = await health.getStatistic(3, 'health')
+    await health.outStr(ctx, arr)
     ctx.scene.reenter()
 })
 //--------------------------------------
@@ -122,6 +165,9 @@ inputValues.action('queryWeek', async ctx => {
     const temper = new Temper(ctx)
     arr = await temper.getStatistic(7, 'temper')
     await temper.outStr(ctx, arr)
+    const health = new Health(ctx)
+    arr = await health.getStatistic(7, 'health')
+    await health.outStr(ctx, arr)
     ctx.scene.reenter()
 })
 //--------------------------------------
@@ -136,6 +182,9 @@ inputValues.action('queryMonth', async ctx => {
     const temper = new Temper(ctx)
     arr = await temper.getStatistic(30, 'temper')
     await temper.outStr(ctx, arr)
+    const health = new Health(ctx)
+    arr = await health.getStatistic(30, 'health')
+    await health.outStr(ctx, arr)
     ctx.scene.reenter()
 })
 //--------------------------------------

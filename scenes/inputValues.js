@@ -68,7 +68,7 @@ inputValues.hears(/^\d{2,3}$/, async ctx => {
 inputValues.hears(/^[*]+$/, async ctx => {
     const val = ctx.match[0]? ctx.match[0].length : 0;
     const health = new Health(ctx);
-    const lastDate = await health.getLastDate()
+    let lastDate = await health.getLastDate()
     if(lastDate == undefined)
         lastDate = {date: new Date('2011-05-20'), val: 0}
     let d = new Date(lastDate.date)

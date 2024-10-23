@@ -39,7 +39,7 @@ class Health extends VALUES {
     }
     //-----------------------------
     async getLastDate(){
-        const sql = `SELECT dataTime date, val FROM ivdoc_bot.health WHERE user_id = ${super.user_id} LIMIT 1;`
+        const sql = `SELECT dataTime date, val FROM ivdoc_bot.health WHERE user_id = ${super.user_id} ORDER BY id DESC LIMIT 1;`
         return (await call_q(sql, 'Сохранение health'))[0];
     }
     //------------------------------

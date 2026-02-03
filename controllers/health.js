@@ -39,26 +39,25 @@ class Health extends VALUES {
     }
     //-----------------------------
     async getLastDate(){
-        const sql = `SELECT dataTime date, val FROM ivdoc_bot.health WHERE user_id = ${super.user_id} AND active = 1 ORDER BY id DESC LIMIT 1;`
-        return (await call_q(sql, 'Сохранение health'))[0];
+        const sql = `SELECT dataTime date, val FROM ivdoc_bot.health WHERE user_id = ? AND active = 1 ORDER BY id DESC LIMIT 1;`
+        return (await call_q(sql, [super.user_id], 'Сохранение health'))[0];
     }
     //------------------------------
     async getAverage(lim = 0){
         let w = '';
         if(lim)w = ` LIMIT ${lim}`;
-        const sql = `SELECT AVG(val) avr FROM ivdoc_bot.health WHERE user_id = ${super.user_id}${w} AND active = 1;`
-        return (await call_q(sql, 'Сохранение health'))[0].avr;
+        const sql = `SELECT AVG(val) avr FROM ivdoc_bot.health WHERE user_id = ? AND active = 1 ${w};`
+        return (await call_q(sql, [super.user_id], 'Сохранение health'))[0].avr;
     }
     //-----------------------
     async getCount(){
-        const sql = `SELECT COUNT(*) count FROM ivdoc_bot.health WHERE user_id = ${super.user_id} AND active = 1;`
-        return (await call_q(sql, 'health.getCount()'))[0].count;
+        const sql = `SELECT COUNT(*) count FROM ivdoc_bot.health WHERE user_id = ? AND active = 1;`
+        return (await call_q(sql, [super.user_id], 'health.getCount()'))[0].count;
     }
     //-----------------------
     async saveValue(){
-        const sql = `INSERT INTO ivdoc_bot.health (user_id, val) VALUES (${super.user_id}, '${this.#value}');`
-        console.log('health saveValue', sql)
-        return await call_q(sql, 'Сохранение health')
+        const sql = `INSERT INTO ivdoc_bot.health (user_id, val) VALUES (?, ?);`
+        return await call_q(sql, [super.user_id, this.#value], 'Сохранение health')
     }
     //-----------------------
     async outStr (ctx, arr) {

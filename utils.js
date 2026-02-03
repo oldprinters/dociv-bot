@@ -569,8 +569,8 @@ const sendTlgMessageLink = async (chat_id, str, link) => {
     }
 //--------------------------------------------------------
 const getTlgIdById = async (user_id) => {
-    const sql = `SELECT tlg_id FROM users WHERE id = ${user_id};`
-    return (await call_q(sql, 'getTlgIdById'))[0].tlg_id
+    const sql = `SELECT tlg_id FROM users WHERE id = ?;`
+    return (await call_q(sql, [user_id], 'getTlgIdById'))[0].tlg_id
 }
 
 export { getRazdel, getDateForBD, outResults,

@@ -37,18 +37,18 @@ CREATE TABLE `ivdoc_bot`.`aliases` (
                   FROM aliases a 
                   LEFT JOIN basename bn ON bn.id = a.name_id 
                   WHERE a.active = 1 
-                     AND item_id = ${id};`
-        return await call_q(sql)
+                     AND item_id = ?;`
+        return await call_q(sql, [id], 'aliases.js getById')
       } catch(e){
         console.log("!!!!aliases.js getById err:", e)
       }
     }
     //----------------------------------------------------
     async getByNameId(name_id){
-      let sql = ` SELECT item_id id FROM aliases WHERE name_id = ${name_id}`
+      let sql = ` SELECT item_id id FROM aliases WHERE name_id = ?`
       // console.log("aliases.js getByNameId sql =", sql)
       try {
-        let res = await call_q(sql)
+        let res = await call_q(sql, [name_id], 'aliases.js getByNameId')
         return res[0]
       }
       catch(err){
@@ -66,25 +66,10 @@ CREATE TABLE `ivdoc_bot`.`aliases` (
         throw 'searchByInp catch!!! ' + err
       }
     }
-    //*********************** req, res */
-    // async update(req, res){
-    //   // async updateItem(item){
-    //   const item = req.body.item
-    //   const aM = new Aliases()
-    //   let result = await aM.getNameIdById(item.id)
-    //   // console.log("aliases updateItem item =", item, result)
-    //   let sql = "UPDATE `basename` SET `name`='" + item.name + "' WHERE `id`= " + result.name_id + ";"
-    //   let res1 = await call_q(sql)
-    //   if(res1.affectedRows == 0){
-    //     console.error("Ошибка записи в таблицу basename. aliases.js updateItem")
-    //   }
-    //   res.status(200).json(result)
-    //   // console.log(res1)
-    // }
     //************************ */
     async insert_name(name){
-      let sql = "INSERT INTO `basename` (`name`, `active`, `class_name`) VALUES ('" + name.trim() + "', '1', 'aliases');"
-      let res = await call_q(sql)
+      let sql = "INSERT INTO `basename` (`name`, `active`, `class_name`) VALUES (?, '1', 'aliases');"
+      let res = await call_q(sql, [name.trim()], 'aliases.js insert_name')
       // console.log("aliases.js insert_name res =", res)
       if(res.affectedRows == 0){
         console.error("Ошибка записи в таблицу basename. aliases.js updateItem")
@@ -124,27 +109,14 @@ CREATE TABLE `ivdoc_bot`.`aliases` (
     }
     //*********************** 
     async insert_item(item){
-      let sql = "INSERT INTO `aliases` (`item_id`, `name_id`, `active`) VALUES ('"+item.station_id+"', '"+item.name_id+"', '1');"
-      let res = await call_q(sql)
+      let sql = "INSERT INTO `aliases` (`item_id`, `name_id`, `active`) VALUES (?, ?, '1');"
+      let res = await call_q(sql, [item.station_id, item.name_id], 'aliases.js insert_item')
       // console.log("aliases insert res =", res)
       if(res.affectedRows == 0){
-        console.error("Ошибка записи в таблицу basename. aliases.js updateItem")
+        console.error("Ошибка записи в таблицу aliases. aliases.js insert_item")
       }
       return res.insertId
     }
-    // //************************ */
-    // async #del_name(){
-    //   let name_id = (await this.#getNameIdById(this.#id)).name_id
-    //   // console.log(name_id)
-    //   let sql = "DELETE FROM `basename` WHERE `id`=" + name_id + ";"
-    //   // console.log("aliases del_name sql =", sql)
-    //   let res = await call_q(sql)
-    //   // console.log("aliases del_name res =", res)
-    //   if(res.affectedRows == 0){
-    //     console.error("Ошибка удаления в таблице basename. aliases.js del_name res =", res)
-    //   }
-    //   return res.affectedRows
-    // }
     //************************ */
     async delete(req, res){
       const id = req.params.id

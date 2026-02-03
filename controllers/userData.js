@@ -1,4 +1,12 @@
 //userData.js
+/*
+ALTER TABLE `ivdoc_bot`.`userData`
+  ADD COLUMN `tariff` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `birth`,
+  ADD COLUMN `category_limit` TINYINT UNSIGNED NOT NULL DEFAULT 3 AFTER `tariff`,
+  ADD COLUMN `tariff_until` DATE NULL AFTER `category_limit`,
+  ADD UNIQUE INDEX `user_id_UNIQUE` (`user_id`);
+*/
+
 import { call_q } from '../config/query.js'
 import { errors, messageOk } from './errors.js';
 import VALUES from "./values.js";

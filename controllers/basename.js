@@ -19,8 +19,8 @@ class BaseName {
   async insert_bn(str){
     if(str.length > 0){
         const searchRegExp = /'/g
-        const sql = `INSERT INTO basename SET name = '${str.replace(searchRegExp ,'"').trim()}', class_name = '${this.class_name.trim()}';`
-        let res = await call_q(sql, 'basename insert')
+        const sql = `INSERT INTO basename SET name = ?, class_name = ?;`
+        let res = await call_q(sql, [str.replace(searchRegExp ,'"').trim(), this.class_name.trim()], 'basename insert')
         let res_id = res.insertId
         return res_id
     } else {
@@ -30,20 +30,20 @@ class BaseName {
   //-------------------------------------------
   async getListByClass(className){
     try{
-      return await call_q(`SELECT * FROM basename WHERE class_name = '${className}'`)
+      return await call_q(`SELECT * FROM basename WHERE class_name = ?`, [className])
     } catch(err){
       console.log("ERROR!!! basename.js getListByClass:", err)
     }
   }
   //***********************************************************//
   async list(){
-    return await call_q(`SELECT * FROM basename WHERE active > 0 AND class_name = '${this.class_name}' ORDER BY name`)
+    return await call_q(`SELECT * FROM basename WHERE active > 0 AND class_name = ? ORDER BY name`, [this.class_name])
   }
   //*********************************** */
   async delete(id){ //TODO сделать уменьшение счетчика active
     this.active = 0
     try {
-      let res = await call_q(`DELETE FROM basename WHERE id = ${id}`)
+      let res = await call_q(`DELETE FROM basename WHERE id = ?`, [id])
     //   console.log("basename delete res =", res)
       return res.affectedRows
     } catch (e){
@@ -54,7 +54,7 @@ class BaseName {
   async update_name(item){
     // console.log("update_name", item)
     try{
-      return await call_q(`UPDATE basename SET name = '${item.name}' WHERE id = ${item.name_id}`)
+      return await call_q(`UPDATE basename SET name = ? WHERE id = ?`, [item.name, item.name_id])
     } catch(err){
       console.log("ERROR!!! basename.js update_name:", err)
     }
@@ -63,11 +63,11 @@ class BaseName {
   async searchByInp(str){
     const sql = ` SELECT id, name 
       FROM basename 
-      WHERE name LIKE '${str}%' COLLATE utf8mb4_unicode_ci 
-      AND class_name = '${this.class_name}';
+      WHERE name LIKE ? COLLATE utf8mb4_unicode_ci 
+      AND class_name = ?;
     `
     try {
-      let res = await call_q(sql)
+      let res = await call_q(sql, [`${str}%`, this.class_name], 'basename searchByInp')
       return res
     } catch (err) {
       console.error("ERROR basename searchByInp catch", err)
@@ -80,9 +80,9 @@ class BaseName {
       const searchRegExp = /'/g
       const sql = ` SELECT id, name 
                     FROM basename 
-                    WHERE name = '${str.replace(searchRegExp ,'"')}' 
-                     AND class_name = '${this.class_name}';`
-      let rows = await call_q(sql)
+                    WHERE name = ? 
+                     AND class_name = ?;`
+      let rows = await call_q(sql, [str.replace(searchRegExp ,'"').trim(), this.class_name], 'basename search')
       // console.log("search rows =", rows)
       if(rows[0] == undefined)
         return 0 //rows[0] = {id : 0}  //TODO проверить: разные возвращаемые значения
@@ -95,7 +95,7 @@ class BaseName {
   }
   //***************************************************** */
   async read(id){
-    const rows = await call_q("SELECT * FROM `basename` WHERE `id` = " + id)
+    const rows = await call_q("SELECT * FROM `basename` WHERE `id` = ?", [id])
     this.str = rows[0].name
     this.name_id = rows[0].id
     this.active = rows[0].active
@@ -108,9 +108,9 @@ class BaseName {
   }
   //************************************************* TODO дописать учет числа испрользуемых записей
   async add_used(id){
-    let res = await call_q("SELECT `active` FROM `basename` WHERE `id` = " + id + ";")
+    let res = await call_q("SELECT `active` FROM `basename` WHERE `id` = ?", [id])
     const count = res[0].active++
-    res = await call_q(`UPDATE basename SET active=${res[0].active} WHERE id = ${id};`)
+    res = await call_q(`UPDATE basename SET active= ? WHERE id = ?`, [res[0].active, id])
     return count
   }
   //************************************************* */

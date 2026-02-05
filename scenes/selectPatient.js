@@ -101,7 +101,7 @@ selectPatient.action('docDeletePatient', async ctx => {
     const ud = new UserData(ctx)
     ud.setUserId(ctx.session.patient_id)
     const fio = await ud.getFio()
-    ctx.reply(`Вы уверены, что хотите онключить пациента ${fio}?`, queryYesNoMenu1())
+    ctx.reply(`Вы уверены, что хотите отключить пациента ${fio}?`, queryYesNoMenu1())
 })
 //--------------------------------------------
 selectPatient.action('queryYes1', async ctx => {

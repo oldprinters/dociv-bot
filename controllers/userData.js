@@ -27,7 +27,9 @@ class UserData {
     async readUserData() {
         if(this.#user_id > 0){
             const userData = await call_q(
-                `SELECT * FROM userData WHERE user_id = ${this.#user_id}`
+                `SELECT * FROM userData WHERE user_id = ?`,
+                [this.#user_id],
+                'Read user data'
                 )
             if (userData.length == 0) {
                 this.#fio = undefined
@@ -50,8 +52,8 @@ class UserData {
     }
     //----------------------------------------
     async setFio(fio) {
-        const sql = `INSERT INTO ivdoc_bot.userData (user_id, fio) VALUES (${this.#user_id}, '${fio}');`
-        const res = await call_q(sql)
+        const sql = `INSERT INTO ivdoc_bot.userData (user_id, fio) VALUES (?, ?);`
+        const res = await call_q(sql, [this.#user_id, fio], 'Save user data')
         if (res.insertId > 0) {
             this.#id = res.insertId
         } else {
@@ -61,7 +63,8 @@ class UserData {
     }
     //----------------------------------------
     async SetBirthDay(birthDay){
-        const sql = `UPDATE ivdoc_bot.userData SET birth = '${birthDay}' WHERE (id = ${this.#id});`
+        const sql = `UPDATE ivdoc_bot.userData SET birth = ? WHERE (id = ?);`
+        await call_q(sql, [birthDay, this.#id], 'Set birth day')
     }
     //----------------------------------------
     async updateUserData(fio) {

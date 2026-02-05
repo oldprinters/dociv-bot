@@ -17,11 +17,11 @@ class Medicament extends BaseName {
     const sql = ` SELECT m.id med_id, bn.id name_id, bn.name medName
       FROM medicament m 
       LEFT JOIN basename bn ON bn.id = m.name_id
-      WHERE name LIKE '${str}%' COLLATE utf8mb4_unicode_ci 
-      AND class_name = '${this.class_name}';
+      WHERE name LIKE ? COLLATE utf8mb4_unicode_ci 
+      AND class_name = ?;
     `
     try {
-      let res = await call_q(sql)
+      let res = await call_q(sql, [`${str}%`, this.class_name], 'medicament searchByInp')
       return res
     } catch (err) {
       console.error("ERROR basename searchByInp catch", err)
@@ -48,9 +48,9 @@ class Medicament extends BaseName {
     //-----------------------------------
     async insert_med(){ //сохранение названия лекарства
         if(this.#name_id){
-            const sql = `INSERT INTO ivdoc_bot.medicament (name_id, author_id, note_id) VALUES (${this.#name_id}, ${this.#doc_id}, ${this.#note_id});`
+            const sql = `INSERT INTO ivdoc_bot.medicament (name_id, author_id, note_id) VALUES (?, ?, ?);`
             // console.log("medicament sql =", sql)
-            const res = await call_q(sql, 'Medicament insert')
+            const res = await call_q(sql, [this.#name_id, this.#doc_id, this.#note_id], 'Medicament insert')
             // console.log("medicament res =", res)
             this.med_id = res.insertId
         } else {
@@ -63,8 +63,8 @@ class Medicament extends BaseName {
         if(med_id != undefined && med_id > 0){
             const sql = `SELECT m.id med_id, name, bn.id name_id FROM medicament m
             LEFT JOIN basename bn ON bn.id = m.name_id
-            WHERE m.id = ${med_id};`
-            const res = (await call_q(sql, 'medicament read'))[0]
+            WHERE m.id = ?;`
+            const res = (await call_q(sql, [med_id], 'medicament read'))[0]
             this.str = res.name
             this.name_id = res.name_id
             this.med_id = res.med_id

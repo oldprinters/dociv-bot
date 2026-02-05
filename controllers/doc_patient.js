@@ -20,9 +20,9 @@ class DocPatient {
             FROM ivdoc_bot.doc_patient dp
             LEFT JOIN userData ud ON ud.user_id = dp.doc_id
             WHERE dp.active = 1
-            AND dp.patient_id = ${this.#user_id}
+            AND dp.patient_id = ?
             ORDER BY fio;
-            `
+            `, [this.#user_id],'doc_patient / getDocs'
         );
         return docs;
     }
@@ -33,9 +33,9 @@ class DocPatient {
             FROM ivdoc_bot.doc_patient dp
             LEFT JOIN userData ud ON ud.user_id = dp.patient_id
             WHERE dp.active = 1
-            AND dp.doc_id = ${this.#user_id}
+            AND dp.doc_id = ?
             ORDER BY fio;
-            `
+            `, [this.#user_id],'doc_patient / getPatients'
         );
         return patients;
     }
@@ -43,14 +43,16 @@ class DocPatient {
     async appendDoc(doc_id) {
         this.#doc_id = doc_id
         const docs = await call_q(
-            `INSERT INTO ivdoc_bot.doc_patient (doc_id, patient_id) VALUES (${this.#doc_id}, ${this.#user_id});`
+            `INSERT INTO ivdoc_bot.doc_patient (doc_id, patient_id) VALUES (?, ?);`, 
+            [this.#doc_id, this.#user_id], 
+            'doc_patient / appendDoc'
         );
         return docs.insertId;
     }
     //-------------------
     async deletePatient(doc_id, patient_id){
-        const sql = `UPDATE doc_patient SET active = 0 WHERE doc_id = ${doc_id} AND patient_id = ${patient_id};`
-        const res = await call_q(sql, 'doc_patient / deletePatient')
+        const sql = `UPDATE doc_patient SET active = 0 WHERE doc_id = ? AND patient_id = ?;`
+        const res = await call_q(sql, [doc_id, patient_id], 'doc_patient / deletePatient')
         return res.affectedRows
     }
 }

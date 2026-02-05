@@ -33,8 +33,8 @@ class Temper extends VALUES {
     }
     //-----------------------
     async saveValue(){
-        const sql = `INSERT INTO ivdoc_bot.temper (user_id, val) VALUES (${this.getUserId()}, '${this.#value}');`
-        return await call_q(sql, 'Сохранение температуры')
+        const sql = `INSERT INTO ivdoc_bot.temper (user_id, val) VALUES (?, ?);`
+        return await call_q(sql, [this.getUserId(), this.#value], 'Сохранение температуры')
     }
     //-----------------------
     async outStr (ctx, arr) {

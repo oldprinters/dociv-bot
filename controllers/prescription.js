@@ -44,8 +44,8 @@ class Prescription extends Medicament {
   }
   //-----------------------------------
   async getInfo(){
-    const sql = `SELECT fio FROM ivdoc_bot.userData WHERE user_id = ${this.#patient_id};`
-    return (await call_q(sql, 'Prescription getInfo'))[0].fio
+    const sql = `SELECT fio FROM ivdoc_bot.userData WHERE user_id = ?;`
+    return (await call_q(sql, [this.#patient_id], 'Prescription getInfo'))[0].fio
   }
   //-----------------------------------
   setMedId(med_id){
@@ -88,8 +88,8 @@ class Prescription extends Medicament {
   }
   //-----------------------------------
   async delete(id){ //удаление рецепта
-    const sql = `UPDATE prescription SET active = '0' WHERE (id = '${id}');`
-    return (await call_q(sql, 'prescription delete')).affectedRows
+    const sql = `UPDATE prescription SET active = '0' WHERE (id = ?);`
+    return (await call_q(sql, id, 'prescription delete')).affectedRows
   }
   //-----------------------------------
   async allInfo() {
@@ -103,9 +103,9 @@ class Prescription extends Medicament {
     // console.log("prescription this =", this)
     if( this.med_id > 0){
       const sql = `INSERT INTO prescription (patient_id, doc_id, med_id, note, dn, kd, krd) VALUES \
-                  (${this.#patient_id}, ${this.#doc_id}, ${this.med_id}, '${this.#note}', ${this.#dn}, ${this.#kd}, ${this.#krd});`
+                  (?, ?, ?, ?, ?, ?, ?);`
       // console.log("prescription sql =", sql)
-      call_q(sql, 'prescription insert')
+      await call_q(sql, [this.#patient_id, this.#doc_id, this.med_id, this.#note, this.#dn, this.#kd, this.#krd], 'prescription insert')
       return this.allInfo()
     } else {
       return undefined
@@ -122,12 +122,11 @@ class Prescription extends Medicament {
       LEFT JOIN medicament med ON p.med_id = med.id
       LEFT JOIN basename bn ON med.name_id = bn.id
       LEFT JOIN userData ud ON p.doc_id = ud.user_id
-      WHERE patient_id = ${this.#patient_id}
-        ${doc}
+      WHERE patient_id = ? ?
         AND p.active = 1
         AND med.active = 1;
     `
-    return await call_q(sql, 'Prescription list')
+    return await call_q(sql, [this.#patient_id, doc], 'Prescription list')
   }
 };
 

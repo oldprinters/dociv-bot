@@ -30,8 +30,8 @@ class Puls extends VALUES {
     }
     //-----------------------
     async saveValue(){
-        const sql = `INSERT INTO ivdoc_bot.puls (user_id, val) VALUES (${this.getUserId()}, '${this.#value}');`
-        return await call_q(sql, 'Сохранение пульса')
+        const sql = `INSERT INTO ivdoc_bot.puls (user_id, val) VALUES (?, ?);`
+        return await call_q(sql, [this.getUserId(), this.#value], 'Сохранение пульса')
     }
     //-----------------------
     async outStr (ctx, arr) {

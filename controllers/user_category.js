@@ -30,9 +30,10 @@ export default class UserCategoryController {
     const [rows] = await call_q(
       `SELECT *
        FROM user_category
-       WHERE user_id = ${userId}
+       WHERE user_id = ?
          AND enabled_from <= CURDATE()
          AND (enabled_until IS NULL OR enabled_until >= CURDATE())`,
+      [userId],
       'Get active categories'
     );
     return rows;
@@ -42,12 +43,13 @@ export default class UserCategoryController {
     const [[row]] = await call_q(
       `SELECT id
        FROM user_category
-       WHERE user_id = ${userId}
-         AND basename_id = ${basenameId}
+       WHERE user_id = ?
+         AND basename_id = ?
          AND enabled_from <= CURDATE()
          AND (enabled_until IS NULL OR enabled_until >= CURDATE())
        LIMIT 1`,
-      'Check if category is active'
+      'Check if category is active',
+      [userId, basenameId], 'Check if category is active'
     );
     return !!row;
   }
@@ -56,7 +58,8 @@ export default class UserCategoryController {
     const [[row]] = await call_q(
       `SELECT MAX(enabled_from) AS last_enabled
        FROM user_category
-       WHERE user_id = ${userId}`,
+       WHERE user_id = ?`, 
+       [userId],
       'Get last category change date'
     );
     return row?.last_enabled ?? null;
@@ -66,9 +69,10 @@ export default class UserCategoryController {
     const [[row]] = await call_q(
       `SELECT COUNT(*) AS cnt
        FROM user_category
-       WHERE user_id = ${userId}
+       WHERE user_id = ?
          AND enabled_from <= CURDATE()
          AND (enabled_until IS NULL OR enabled_until >= CURDATE())`,
+      [userId],
       'Get active category count'
     );
     return row.cnt;

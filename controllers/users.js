@@ -27,8 +27,8 @@ class Users {
     async init(ctx) {
         const user = await this.readUserTlg()
         if(user == undefined){
-            const sql = `INSERT INTO ivdoc_bot.users (tlg_id, role) VALUES ('${this.#tlg_user.id}', '${this.#role}');`
-            this.#id = (await call_q(sql)).insertId
+            const sql = `INSERT INTO ivdoc_bot.users (tlg_id, role) VALUES (?, ?);`
+            this.#id = (await call_q(sql, [this.#tlg_user.id, this.#role])).insertId
             this.#isAdmin = false
             this.#active = 1
             ctx.session.role = this.#role
@@ -47,11 +47,11 @@ class Users {
         const sql = `
             SELECT * 
             FROM ivdoc_bot.users
-            WHERE tlg_id = ${tlg_id}
+            WHERE tlg_id = ?
             AND active = 1
             ;
         `
-        return (await call_q(sql))[0]
+        return (await call_q(sql, [tlg_id], 'Get user by tlg_id'))[0]
     }
     //---------------------------------------
     isAdmin(){return this.#isAdmin}
@@ -69,12 +69,12 @@ class Users {
             SELECT user_id, fio
             FROM ivdoc_bot.users u
             LEFT JOIN ivdoc_bot.userData d ON u.id = d.user_id
-            WHERE role = '${role}'
+            WHERE role = ?
             AND u.active = 1
             AND d.active = 1
             ;
         `
-        return (await call_q(sql))
+        return (await call_q(sql, [role], 'Get list by role'))
     }
     //---------------------------------------
     async readUserTlg() {
@@ -82,9 +82,9 @@ class Users {
             const sql = `
                 SELECT * 
                 FROM ivdoc_bot.users 
-                WHERE tlg_id = ${this.#tlg_user.id};
+                WHERE tlg_id = ?;
             `
-            const user = (await call_q(sql))[0]
+            const user = (await call_q(sql, [this.#tlg_user.id], 'Read user tlg'))[0]
             if(user != undefined) {
                 this.#id = user.id
                 this.#isAdmin = user.isAdmin

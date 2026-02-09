@@ -81,7 +81,8 @@ class BaseName {
       const sql = ` SELECT id, name 
                     FROM basename 
                     WHERE name = ? 
-                     AND class_name = ?;`
+                     AND class_name = ?
+                     AND active > 0;`
       let rows = await call_q(sql, [str.replace(searchRegExp ,'"').trim(), this.class_name], 'basename search')
       // console.log("search rows =", rows)
       if(rows[0] == undefined)

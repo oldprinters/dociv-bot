@@ -16,7 +16,7 @@ export default class UserInputService {
 
     const { key, value } = parsed
 
-    const basename = await this.basename.findByPrefix(key)
+    const basename = await this.basename.search(key)
     if (!basename)
       return { ok: false, message: `Параметр "${key}" не найден` }
 

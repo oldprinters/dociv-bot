@@ -50,8 +50,8 @@ export default class UserCategoryController {
          AND enabled_from <= CURDATE()
          AND (enabled_until IS NULL OR enabled_until >= CURDATE())
        LIMIT 1`,
-      'Check if category is active',
-      [userId, basenameId], 'Check if category is active'
+      [userId, basenameId],
+      'Check if category is active'
     );
     return !!row;
   }

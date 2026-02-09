@@ -8,6 +8,12 @@ import {outDateTime, outDate, outTimeDate, getRazdel} from "../utils.js"
 import {queryPeriodMenu, queryDeleteMenu, querySetupMenu} from "../keyboards/keyboards.js"
 import Temper from "../controllers/temper.js"
 import { errors, messageOk } from '../controllers/errors.js';
+import userInputService from '../services/UserInputService.js';
+import BaseName from '../controllers/basename.js'
+import userCategoryController from '../controllers/user_category.js'
+import userValueController from '../controllers/user_values.js'
+import Users from '../controllers/users.js'
+import UserInputService from "../services/UserInputService.js";
 
 const inputValues = new Scenes.BaseScene('INPUT_VALUES')
 //--------------------------------------
@@ -235,6 +241,22 @@ inputValues.action('queryTemper', async ctx => {
 })
 //--------------------------------------
 inputValues.on('text', async ctx => {
+    const input = ctx.message.text;
+
+    const userInputService = new UserInputService({
+        basenameController: new BaseName('categories'),
+        UserCategoryController: new userCategoryController(),
+        UserValueController: new userValueController(),
+        userController: new Users()
+    })
+
+    const result = await userInputService.process(
+        ctx.from.id,
+        input
+    );
+console.log("***** result =", result)
+  await ctx.reply(result.message);
+
     await ctx.replyWithHTML("<i>Для того, что бы бот понимал смысл введенных данных, следует придерживаться следующих правил:</i>\n\n"
         +"<b>Давление</b> - два целых числа разделенных пробелом, звездочкой или наклонной чертой;\n\n"
         +"<b>Пульс</b> - целое число, может вводиться после давления (разделитель тот же) или отдельно;\n\n"

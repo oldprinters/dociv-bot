@@ -1,32 +1,47 @@
 export default class UserInputService {
 
-  constructor({ basenameController, userCategoryController, userValueController, userController }) {
-    this.basename = basenameController
+  constructor({
+    basenameService,
+    userCategoryController,
+    userValueController,
+    userController,
+    userDataController
+  }) {
+    this.basename = basenameService
     this.userCategory = userCategoryController
     this.userValue = userValueController
     this.user = userController
+    this.userData = userDataController
   }
 
+  // ========================
   // Главная точка входа
+  // ========================
   async process(userId, text) {
     const parsed = this.parse(text)
 
     if (!parsed)
-      return { ok: false, message: 'Не понял формат. Пример: вес 82.5' }
+      return { ok: false, message: 'Формат: параметр значение (например: вес 82.5)' }
 
-    const { key, value } = parsed
+    const { key, value, raw } = parsed
+console.log('Parsed input:', { key, value, raw })
+    let basename = await this.basename.findByPrefix(key)
 
-    const basename = await this.basename.search(key)
-    if (!basename)
-      return { ok: false, message: `Параметр "${key}" не найден` }
+    if (!basename) {
+      const allow = await this.canCreateCategory(userId)
+      if (!allow.ok) return allow
 
-    const canUse = await this.checkUserCategory(userId, basename.id)
-    if (!canUse.ok) return canUse
+      const id = await this.basename.create(key)
+      basename = { id, name: key }
+    }
+
+    const catResult = await this.ensureCategory(userId, basename.id)
+    if (!catResult.ok) return catResult
 
     await this.userValue.insert({
-      user_id: userId,
-      basename_id: basename.id,
-      value
+      user_category_id: catResult.user_category_id,
+      value,
+      raw_value: raw
     })
 
     return {
@@ -35,54 +50,68 @@ export default class UserInputService {
     }
   }
 
-  // --------------------
-  // Парсинг ввода
-  // --------------------
+  // ========================
+  // Парсер пользовательского ввода
+  // ========================
   parse(text) {
     text = text.trim().replace(',', '.')
 
-    const m = text.match(/^([\p{L}\w]+)\s+([-+]?\d+(?:\.\d+)?)$/iu)
+    const m = text.match(/^([\p{L}\w]+)\s+(.+)$/iu)
     if (!m) return null
 
+    const key = m[1].toLowerCase()
+    const raw = m[2].trim()
+
+    const value = parseFloat(raw)
     return {
-      key: m[1].toLowerCase(),
-      value: parseFloat(m[2])
+      key,
+      raw,
+      value: Number.isFinite(value) ? value : null
     }
   }
 
-  // --------------------
-  // Проверка доступности категории
-  // --------------------
-  async checkUserCategory(userId, basenameId) {
-    const isActive = await this.userCategory.isCategoryActive(userId, basenameId)
-    if (isActive) return { ok: true }
+  // ========================
+  // Проверка возможности создать новую категорию
+  // ========================
+  async canCreateCategory(userId) {
+    const user = await this.userData.getUser(userId)
 
-    const user = await this.user.getUser(userId)
+    if (user.tariff > 0) return { ok: true }
 
-    if (user.tariff > 0) {
-      await this.userCategory.enable(userId, basenameId)
-      return { ok: true }
-    }
-
-    const activeCount = await this.userCategory.countActive(userId)
+    const activeCount = await this.userCategory.getActiveCategoryCount(userId)
 
     if (activeCount >= user.category_limit) {
       return {
         ok: false,
-        message: `Лимит ${user.category_limit} категорий. Можно сменить не чаще 1 раза в месяц.`
+        message: `Доступно ${user.category_limit} категорий. Чтобы добавить новую, отключите одну из старых.`
       }
     }
 
     const canChange = await this.userCategory.canChangeCategory(userId)
+
     if (!canChange) {
       return {
         ok: false,
-        message: 'Менять категории можно не чаще 1 раза в месяц'
+        message: 'Менять категории можно не чаще одного раза в месяц.'
       }
     }
 
-    await this.userCategory.enable(userId, basenameId)
     return { ok: true }
+  }
+
+  // ========================
+  // Активация категории
+  // ========================
+  async ensureCategory(userId, basenameId) {
+    const active = await this.userCategory.isCategoryActive(userId, basenameId)
+    if (active) return { ok: true, user_category_id: active.id }
+
+    const allow = await this.canCreateCategory(userId)
+    if (!allow.ok) return allow
+
+    const id = await this.userCategory.enableCategory(userId, basenameId)
+
+    return { ok: true, user_category_id: id }
   }
 
 }

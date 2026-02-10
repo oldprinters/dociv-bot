@@ -44,7 +44,7 @@ prescription.action('saveToPDFMed', async ctx => {
          doc_id: ctx.session.doc_id 
         }
     ud.setUserId(ctx.session.patient_id)
-    ats.patient_name = await ud.readUserData()
+    ats.patient_name = (await ud.readUserData())?.fio ?? '********' //TODO проверить, что возвращается при отсутствии данных
     const pr = new Prescription(ctx.session.patient_id, ctx.session.doc_id)
     const list = await pr.list()
     const doc = new jsPDF()

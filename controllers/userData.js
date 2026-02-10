@@ -16,12 +16,20 @@ class UserData {
     #id
     #user_id;
     #fio
+    #category_limit = 3
+    #tariff_until = null
+    #tariff = 0
+    #birth = null
     constructor(ctx) {
         this.#user_id = ctx.session.userId
     }
     //----------------------------------------
     setUserId(user_id){
         this.#user_id = user_id
+    }
+    //----------------------------------------
+    async getUser() {
+        return await this.readUserData()
     }
     //----------------------------------------
     async readUserData() {
@@ -31,15 +39,26 @@ class UserData {
                 [this.#user_id],
                 'Read user data'
                 )
-            if (userData.length == 0) {
-                this.#fio = undefined
-            } else {
+            if (userData.length > 0) {
                 this.#id = userData[0].id
                 this.#fio = userData[0].fio
+                this.#category_limit = userData[0].category_limit
+                this.#tariff_until = userData[0].tariff_until
+                this.#tariff = userData[0].tariff
+                this.#birth = userData[0].birth
+                return userData[0]
             }
         }
-        return this.#fio
+        return null
     }
+    //----------------------------------------
+    get category_limit() { return this.#category_limit}
+    //----------------------------------------
+    get tariff_until() { return this.#tariff_until}
+    //----------------------------------------
+    get tariff() { return this.#tariff}
+    //----------------------------------------
+    get birth() { return this.#birth}
     //----------------------------------------
     async getId() {
         return this.#id
@@ -49,6 +68,37 @@ class UserData {
         if(this.#fio == undefined)
             await this.readUserData()
         return this.#fio
+    }
+
+    //----------------------------------------
+    async getUserId() {
+        if(this.#user_id == undefined)
+            await this.readUserData()
+        return this.#user_id
+    }
+    //----------------------------------------
+    async getCategoryLimit() {
+        if(this.#category_limit == undefined)
+            await this.readUserData()
+        return this.#category_limit
+    }
+    //----------------------------------------
+    async getTariffUntil() {
+        if(this.#tariff_until == undefined)
+            await this.readUserData()
+        return this.#tariff_until
+    }
+    //----------------------------------------
+    async getTariff() {
+        if(this.#tariff == undefined)
+            await this.readUserData()
+        return this.#tariff
+    }
+    //----------------------------------------
+    async getBirth() {
+        if(this.#birth == undefined)
+            await this.readUserData()
+        return this.#birth
     }
     //----------------------------------------
     async setFio(fio) {

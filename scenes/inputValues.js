@@ -8,12 +8,12 @@ import {outDateTime, outDate, outTimeDate, getRazdel} from "../utils.js"
 import {queryPeriodMenu, queryDeleteMenu, querySetupMenu} from "../keyboards/keyboards.js"
 import Temper from "../controllers/temper.js"
 import { errors, messageOk } from '../controllers/errors.js';
-import userInputService from '../services/UserInputService.js';
+import UserInputService from '../services/UserInputService.js';
 import BaseName from '../controllers/basename.js'
-import userCategoryController from '../controllers/user_category.js'
-import userValueController from '../controllers/user_values.js'
-import Users from '../controllers/users.js'
-import UserInputService from "../services/UserInputService.js";
+import UserCategoryController from '../controllers/user_category.js'
+import UserValueController from '../controllers/user_values.js'
+import Users from '../controllers/users.js';
+import UserData from '../controllers/userData.js';
 
 const inputValues = new Scenes.BaseScene('INPUT_VALUES')
 //--------------------------------------
@@ -244,10 +244,11 @@ inputValues.on('text', async ctx => {
     const input = ctx.message.text;
 
     const userInputService = new UserInputService({
-        basenameController: new BaseName('categories'),
-        UserCategoryController: new userCategoryController(),
-        UserValueController: new userValueController(),
-        userController: new Users()
+        basenameService: new BaseName('categories'),
+        userCategoryController: new UserCategoryController(),
+        userValueController: new UserValueController(),
+        userController: new Users(ctx),
+        userDataController: new UserData(ctx)
     })
 
     const result = await userInputService.process(

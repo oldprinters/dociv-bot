@@ -28,7 +28,7 @@ export default class UserCategoryController {
 //-----------------------------------------------------------------
 // Получить все активные категории пользователя
   async getActiveCategories(userId) {
-    const [rows] = await call_q(
+    const rows = await call_q(
       `SELECT *
        FROM user_category
        WHERE user_id = ?
@@ -42,7 +42,7 @@ export default class UserCategoryController {
 //-----------------------------------------------------------------
 // Проверить, активна ли конкретная категория для пользователя по basename_id
   async isCategoryActive(userId, basenameId) {
-    const [[row]] = await call_q(
+    const rows = await call_q(
       `SELECT id
        FROM user_category
        WHERE user_id = ?
@@ -53,24 +53,26 @@ export default class UserCategoryController {
       [userId, basenameId],
       'Check if category is active'
     );
+    const row = rows[0];
     return !!row;
   }
 //-----------------------------------------------------------------
 // Получить дату последнего изменения категории (включения/отключения) для пользователя
   async getLastCategoryChangeDate(userId) {
-    const [[row]] = await call_q(
+    const rows = await call_q(
       `SELECT MAX(enabled_from) AS last_enabled
        FROM user_category
        WHERE user_id = ?`, 
-       [userId],
+      [userId],
       'Get last category change date'
     );
+    const row = rows[0];
     return row?.last_enabled ?? null;
   }
 //-----------------------------------------------------------------
 // Получить количество активных категорий для пользователя
   async getActiveCategoryCount(userId) {
-    const [[row]] = await call_q(
+    const rows = await call_q(
       `SELECT COUNT(*) AS cnt
        FROM user_category
        WHERE user_id = ?
@@ -79,7 +81,8 @@ export default class UserCategoryController {
       [userId],
       'Get active category count'
     );
-    return row.cnt;
+    const row = rows[0];
+    return row?.cnt ?? 0;
   }
 
   /* =========================
@@ -100,12 +103,13 @@ export default class UserCategoryController {
      ========================= */
 // Добавить категорию для пользователя
   async enableCategory(userId, basenameId) {
-    await call_q(
+    const res = await call_q(
       `INSERT INTO user_category (user_id, basename_id)
        VALUES (?, ?)`,
       [userId, basenameId],
       'Enable category'
     );
+    return res.insertId;
   }
 // Отключить категорию для пользователя (установить enabled_until)
   async disableCategory(userId, basenameId) {

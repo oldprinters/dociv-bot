@@ -75,6 +75,10 @@ class BaseName {
     }
 }
 //***************************************************** */
+  async findByPrefix(str){
+    return await this.search(str)
+  }
+//***************************************************** возвращает id  или 0, если не найден
   async search(str){
     try {
       const searchRegExp = /'/g
@@ -113,6 +117,10 @@ class BaseName {
     const count = res[0].active++
     res = await call_q(`UPDATE basename SET active= ? WHERE id = ?`, [res[0].active, id])
     return count
+  }
+  //************************************************* */
+  async create(name) {
+    return await this.setName(name)
   }
   //************************************************* */
   async setName(name){

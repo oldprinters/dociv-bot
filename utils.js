@@ -499,7 +499,7 @@ const outResultsFile = async (ctx, nDay = 0) => {
         // doc_id: ctx.session.doc_id 
     }
     ud.setUserId(ctx.session.patient_id)
-    ats.patient_name = await ud.readUserData()
+    ats.patient_name = (await ud.readUserData())?.fio ?? null
 
     const tId = ctx.session.userId
     ctx.session.userId = ctx.session.patient_id

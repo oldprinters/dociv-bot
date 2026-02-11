@@ -19,14 +19,41 @@ import { call_q } from '../config/query.js'
 
 
 export default class UserCategoryController {
+
   constructor() {
   }
 
   /* =========================
      Получение данных
      ========================= */
-//-----------------------------------------------------------------
-// Получить все активные категории пользователя
+  //-----------------------------------------------------------------
+  async getActiveList(userId) {
+    const sql = `
+      SELECT
+        uc.id,
+        b.name,
+        uc.enabled_from
+      FROM user_category uc
+      JOIN basename b ON b.id = uc.basename_id
+      WHERE uc.user_id = ?
+        AND (uc.enabled_until IS NULL OR uc.enabled_until >= CURDATE())
+      ORDER BY uc.enabled_from ASC
+    `
+    return call_q(sql, [userId], 'Get active categories')
+  }
+  //-----------------------------------------------------------------
+  async disable(userCategoryId) {
+    const sql = `
+      UPDATE user_category
+      SET enabled_until = CURDATE()
+      WHERE id = ?
+        AND (enabled_until IS NULL OR enabled_until >= CURDATE())
+    `
+
+    return call_q(sql, [userCategoryId], 'Disable category')
+  }
+  //-----------------------------------------------------------------
+  // Получить все активные категории пользователя
   async getActiveCategories(userId) {
     const rows = await call_q(
       `SELECT *
@@ -54,7 +81,7 @@ export default class UserCategoryController {
       'Check if category is active'
     );
     const row = rows[0];
-    return !!row;
+    return row;
   }
 //-----------------------------------------------------------------
 // Получить дату последнего изменения категории (включения/отключения) для пользователя

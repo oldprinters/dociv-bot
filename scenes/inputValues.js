@@ -14,6 +14,7 @@ import UserCategoryController from '../controllers/user_category.js'
 import UserValueController from '../controllers/user_values.js'
 import Users from '../controllers/users.js';
 import UserData from '../controllers/userData.js';
+import UserCategoryService from '../services/UserCategoryService.js';
 
 const inputValues = new Scenes.BaseScene('INPUT_VALUES')
 //--------------------------------------
@@ -239,6 +240,35 @@ inputValues.action('queryTemper', async ctx => {
     }
     ctx.scene.reenter()
 })
+//--------------------------------------
+inputValues.hears(/^категории$/i, async ctx => {
+
+    const userCategoryService = new UserCategoryService(new UserCategoryController())
+    const list = await userCategoryService.list(ctx.from.id)
+
+    if (!list.length)
+        return ctx.reply('У вас нет активных категорий')
+
+    let msg = 'Ваши активные категории:\n\n'
+    list.forEach((c, i) => {
+        msg += `${i + 1}. ${c.name}\n`
+    })
+
+    msg += '\nНапишите: удалить N'
+
+    await ctx.reply(msg)
+})
+//--------------------------------------
+inputValues.hears(/^удалить\s+(\d+)$/i, async ctx => {
+    const userCategoryService = new UserCategoryService(new UserCategoryController())
+
+    const n = parseInt(ctx.match[1])
+
+    const res = await userCategoryService.disableByIndex(ctx.from.id, n)
+
+    await ctx.reply(res.message)
+})
+
 //--------------------------------------
 inputValues.on('text', async ctx => {
     const input = ctx.message.text;

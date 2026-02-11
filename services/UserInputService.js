@@ -24,14 +24,16 @@ export default class UserInputService {
       return { ok: false, message: 'Формат: параметр значение (например: вес 82.5)' }
 
     const { key, value, raw } = parsed
-console.log('Parsed input:', { key, value, raw })
-    let basename = await this.basename.findByPrefix(key)
 
-    if (!basename) {
-      const allow = await this.canCreateCategory(userId)
+    let basename = { id: 0, name: key }
+
+    basename.id = await this.basename.findByPrefix(key) //поиск категории по префиксу
+
+    if (!basename.id) {
+      const allow = await this.canCreateCategory(userId)  //проверка возможности создать новую категорию
       if (!allow.ok) return allow
 
-      const id = await this.basename.create(key)
+      const id = await this.basename.create(key)  //создание новой категории
       basename = { id, name: key }
     }
 
@@ -103,7 +105,9 @@ console.log('Parsed input:', { key, value, raw })
   // Активация категории
   // ========================
   async ensureCategory(userId, basenameId) {
+    // Проверяем, есть ли уже активная категория для данного базового имени
     const active = await this.userCategory.isCategoryActive(userId, basenameId)
+
     if (active) return { ok: true, user_category_id: active.id }
 
     const allow = await this.canCreateCategory(userId)

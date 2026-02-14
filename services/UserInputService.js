@@ -76,7 +76,7 @@ export default class UserInputService {
   // Проверка возможности создать новую категорию
   // ========================
   async canCreateCategory(userId) {
-    const user = await this.userData.getUser(userId)
+    const user = await this.user.getUser(userId)
 
     if (user.tariff > 0) return { ok: true }
 

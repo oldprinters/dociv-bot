@@ -1,3 +1,10 @@
+/*
+ALTER TABLE `ivdoc_bot`.`users` 
+ADD COLUMN `tariff` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0 AFTER `isAdmin`,
+ADD COLUMN `tariff_until` DATE NULL DEFAULT NULL AFTER `tariff`,
+ADD COLUMN `category_limit` TINYINT(3) UNSIGNED NOT NULL DEFAULT 3 AFTER `tariff_until`;
+*/
+
 import { call_q } from '../config/query.js'
 
 class Users {
@@ -7,6 +14,9 @@ class Users {
     #active = 1
     #isAdmin    //администратор бота
     #classes = []
+    #category_limit = 3
+    #tariff_until = null
+    #tariff = 0
     //---------------------------------------
     constructor(tlg_user_id) {
 //        if(typeof ctx === 'object' && !Array.isArray(ctx) !== null){
@@ -77,6 +87,15 @@ class Users {
         return (await call_q(sql, [role], 'Get list by role'))
     }
     //---------------------------------------
+    async getUser(userId) {
+        const sql = `
+            SELECT * 
+            FROM ivdoc_bot.users
+            WHERE tlg_id = ?
+        `
+        return (await call_q(sql, [userId], 'Get user by tlg_id'))[0]
+    }
+    //---------------------------------------
     async readUserTlg() {
         if(this.#tlg_user?.id){
             const sql = `
@@ -90,6 +109,9 @@ class Users {
                 this.#isAdmin = user.isAdmin
                 this.#active = user.active
                 this.#role = user.role
+                this.#category_limit = user.category_limit
+                this.#tariff_until = user.tariff_until
+                this.#tariff = user.tariff
             }
             // console.log(user)
             return user

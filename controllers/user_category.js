@@ -45,7 +45,7 @@ export default class UserCategoryController {
   async disable(userCategoryId) {
     const sql = `
       UPDATE user_category
-      SET enabled_until = CURDATE()
+      SET enabled_until = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
       WHERE id = ?
         AND (enabled_until IS NULL OR enabled_until >= CURDATE())
     `
@@ -142,7 +142,7 @@ export default class UserCategoryController {
   async disableCategory(userId, basenameId) {
     await call_q(
       `UPDATE user_category
-       SET enabled_until = CURDATE()
+       SET enabled_until = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
        WHERE user_id = ?
          AND basename_id = ?
          AND enabled_until IS NULL`,

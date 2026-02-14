@@ -14,7 +14,7 @@ CREATE TABLE ivdoc_bot.user_values (
 import { call_q } from '../config/query.js'
 
 export default class UserValueController {
-
+  //------------------------------------------------------------------------
   async insert({ user_category_id, value = null, raw_value = null }) {
     const sql = `
       INSERT INTO user_values
@@ -30,7 +30,7 @@ export default class UserValueController {
 
     return res.insertId
   }
-
+  //------------------------------------------------------------------------
   async getLast(user_category_id) {
     const sql = `
       SELECT *
@@ -43,7 +43,7 @@ export default class UserValueController {
     const [row] = await call_q(sql, [user_category_id], 'Get last value')
     return row || null
   }
-
+  //------------------------------------------------------------------------
   async getPeriod(user_category_id, from, to) {
     const sql = `
       SELECT *
@@ -55,7 +55,7 @@ export default class UserValueController {
 
     return call_q(sql, [user_category_id, from, to], 'Get period values')
   }
-
+  //------------------------------------------------------------------------
   async getAllForUser(user_id) {
     const sql = `
       SELECT
@@ -71,6 +71,30 @@ export default class UserValueController {
     `
 
     return call_q(sql, [user_id], 'Get all user values')
+  }
+  //------------------------------------------------------------------------
+  async getDays(user_category_id, days) {
+    const sql = `
+      SELECT *
+      FROM user_values
+      WHERE user_category_id = ?
+        AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+      ORDER BY created_at ASC
+    `
+
+    return call_q(sql, [user_category_id, days], 'Get values by days')
+  }
+  //------------------------------------------------------------------------
+  async getLastN(user_category_id, limit) {
+    const sql = `
+      SELECT *
+      FROM user_values
+      WHERE user_category_id = ?
+      ORDER BY created_at DESC
+      LIMIT ?
+    `
+
+    return call_q(sql, [user_category_id, limit], 'Get last N values')
   }
 
 }

@@ -5,7 +5,7 @@ import Health from "../controllers/health.js";
 import Puls from "../controllers/puls.js"
 import Pressure from "../controllers/pressure.js"
 import {outDateTime, outDate, outTimeDate, getRazdel} from "../utils.js"
-import {queryPeriodMenu, queryDeleteMenu, querySetupMenu} from "../keyboards/keyboards.js"
+import {queryPeriodMenu, queryDeleteMenu, queryPeriodMenuNaz} from "../keyboards/keyboards.js"
 import Temper from "../controllers/temper.js"
 import { errors, messageOk } from '../controllers/errors.js';
 import UserInputService from '../services/UserInputService.js';
@@ -15,12 +15,13 @@ import UserValueController from '../controllers/user_values.js'
 import Users from '../controllers/users.js';
 import UserData from '../controllers/userData.js';
 import UserCategoryService from '../services/UserCategoryService.js';
-import userCategoryController from '../controllers/user_category.js';
+import UserReportService from '../services/UserReportService.js';
 
 const inputValues = new Scenes.BaseScene('INPUT_VALUES')
 //--------------------------------------
 inputValues.enter(async ctx => {
-    const uc = new userCategoryController()
+    const uc = new UserCategoryController()
+
     const userCategoryService = new UserCategoryService(uc)
     const list = await userCategoryService.list(ctx.from.id)
     
@@ -158,7 +159,7 @@ inputValues.command('setup', async ctx => {
 })
 //-------------------------------------- 
 inputValues.command('list', async ctx => {
-    ctx.reply("Выберите период", queryPeriodMenu())
+    ctx.reply("Выберите период", queryPeriodMenuNaz())
     ctx.scene.reenter()
 })
 //--------------------------------------
@@ -169,6 +170,28 @@ inputValues.hears(/^del$/i, async ctx => {
     //     ctx.scene.reenter()
     // }
 })
+//--------------------------------------
+inputValues.action(/^list_/, async ctx => {
+    await ctx.answerCbQuery('Loading')
+
+    const userReportService = new UserReportService(new UserCategoryController(), new UserValueController())
+
+    const mode = ctx.callbackQuery.data.replace('list_', '')
+
+    let params
+
+    switch (mode) {
+        case '3': params = { days: 3 }; break
+        case '10': params = { days: 10 }; break
+        case '30': params = { days: 30 }; break
+        case 'last10': params = { last: 10 }; break
+    }
+
+    const text = await userReportService.build(ctx.from.id, params)
+
+    await ctx.editMessageText(text)
+})
+
 //--------------------------------------
 inputValues.action('queryDays', async ctx => {
     await ctx.answerCbQuery('Loading')

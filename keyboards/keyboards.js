@@ -51,12 +51,23 @@ const appendMedMenu = () => {
 const queryPeriodMenuNaz = () => {
     return Markup.inlineKeyboard([
         [
-            Markup.button.callback("Три дня", "queryDays"),
-            Markup.button.callback("Неделя", "queryWeek"),
-            Markup.button.callback("Месяц", "queryMonth")
+            Markup.button.callback('3 дня', 'list_3'),
+            Markup.button.callback('10 дней', 'list_10')
         ],
-        [Markup.button.callback("Назначение", "prescription")]
-    ])
+        [
+            Markup.button.callback('месяц', 'list_30'),
+            Markup.button.callback('последние 10', 'list_last10')
+        ]
+        ])
+
+    // return Markup.inlineKeyboard([
+    //     [
+    //         Markup.button.callback("Три дня", "queryDays"),
+    //         Markup.button.callback("Неделя", "queryWeek"),
+    //         Markup.button.callback("Месяц", "queryMonth")
+    //     ],
+    //     [Markup.button.callback("Назначение", "prescription")]
+    // ])
 }
 //------------------------------------------
 const queryDocPatient = () => {

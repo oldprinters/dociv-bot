@@ -21,7 +21,7 @@ export default class UserInputService {
     const parsed = this.parse(text)
 
     if (!parsed)
-      return { ok: false, message: 'Формат: параметр значение (например: вес 82.5)' }
+      return { ok: false, message: '' }
 
     const { key, value, raw } = parsed
 

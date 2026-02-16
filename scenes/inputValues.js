@@ -188,9 +188,10 @@ inputValues.action(/^list_/, async ctx => {
         case 'last10': params = { last: 10 }; break
     }
 
-    const text = await userReportService.build(ctx.from.id, params)
-
-    await ctx.editMessageText(text)
+    const results = await userReportService.build(ctx.from.id, params)
+    for(const cat of results) {
+        await ctx.replyWithHTML(`📊<pre>*** ${cat.name}: ***\n${cat.rows}</pre>`)
+    }
 })
 
 //--------------------------------------

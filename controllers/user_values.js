@@ -94,7 +94,9 @@ export default class UserValueController {
       LIMIT ?
     `
 
-    return call_q(sql, [user_category_id, limit], 'Get last N values')
+    const rows = await call_q(sql, [user_category_id, limit], 'Get last N values')
+
+    return rows.reverse() // чтобы вывод шёл от старых к новым
   }
 
 }

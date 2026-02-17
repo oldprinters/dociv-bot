@@ -137,23 +137,43 @@ export default class UserReportService {
     doc.setFont('NotoMono-Regular')
     doc.setFontSize(11)
 
+    let Y = 40 // Начальная Y-позиция после заголовков
+    const pageHeight = 780 // Высота страницы с отступами
+    const lineHeight = 12 // Высота строки для шрифта 11
     let nPage = 0
-    
+
     for(const cat of arr) {
-      doc.setFontSize(11)
-      doc.setFont('times')
-      doc.text(cat.name, 20, 30)
-      // console.log('cat.rows =', cat.rows)
-      let lines = cat.rows.split('\n')
-      while(true){
-          let chunk = lines.splice(0, 55 + (nPage > 0? 5: 0))
-          doc.text(chunk.join('\n'), 20, 20 + (nPage == 0? 20: 0))
-          nPage += 1
-          if(lines.length == 0)
-              break
+      // Печать заголовка категории
+      if(nPage++){
           doc.addPage()
+          Y = 20
       }
-      doc.addPage()
+      doc.setFont('times')
+      doc.setFontSize(14)
+      doc.text(cat.name, 20, Y)
+      doc.setFontSize(11)
+      Y += 10 // Отступ после заголовка
+
+      doc.setFont('NotoMono-Regular')
+      doc.setFontSize(11)
+
+      let lines = cat.rows.split('\n')
+      while(lines.length > 0){
+        let availableHeight = pageHeight - Y
+        let availableLines = Math.floor(availableHeight / lineHeight)
+        let chunkSize = Math.min(availableLines, 50 + 5 * (nPage > 1))
+        if (chunkSize <= 0) {
+          doc.addPage()
+          Y = 20
+          continue
+        }
+        let chunk = lines.splice(0, chunkSize)
+        let text = chunk.join('\n')
+        doc.text(text, 20, Y)
+        Y += chunk.length * lineHeight + 5
+      }
+
+      Y += 10 // Дополнительный отступ между категориями
     }
     doc.save(fName)
   }

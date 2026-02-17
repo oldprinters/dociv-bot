@@ -86,15 +86,17 @@ export default class UserValueController {
   }
   //------------------------------------------------------------------------
   async getLastN(user_category_id, limit) {
+    let l = ''
+    if(limit > 0) l = `LIMIT ${limit}`
     const sql = `
       SELECT *
       FROM user_values
       WHERE user_category_id = ?
       ORDER BY created_at DESC
-      LIMIT ?
+      ${l}
     `
 
-    const rows = await call_q(sql, [user_category_id, limit], 'Get last N values')
+    const rows = await call_q(sql, [user_category_id], 'Get last N values')
 
     return rows.reverse() // чтобы вывод шёл от старых к новым
   }

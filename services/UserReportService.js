@@ -1,5 +1,13 @@
-export default class UserReportService {
+import { jsPDF } from 'jspdf'
+import fs from 'fs/promises'
+import {font} from '../fonts/times-normal.js'
+import {font_m} from '../fonts/NotoMono-Regular-normal.js'
+import { outDateTime } from '../utils.js'
+import UserData from '../controllers/userData.js'
 
+
+export default class UserReportService {
+  //------------------------------------------------------------------------
   constructor(userCategoryController, userValueController) {
     this.uc = userCategoryController
     this.uv = userValueController
@@ -66,5 +74,88 @@ export default class UserReportService {
   formatDate(dt) {
     return new Date(dt).toLocaleDateString('ru-RU')
   }
+  //-----------------------------------------------
+  async outPdf(ctx, arr) {
+    console.log('ctx =', ctx.session)
+    ctx.session.userId = ctx.session.patient_id
+    const ud = new UserData(ctx)
+    const fName = `./prescriptions/list_${ctx.session.patient_id}.pdf`
 
+    let ats = { 
+        patient_id: ctx.session.patient_id,
+    }
+    ud.setUserId(ctx.session.patient_id)
+    ats.patient_name = (await ud.readUserData())?.fio ?? null
+
+    const tId = ctx.session.userId
+    ctx.session.userId = ctx.session.patient_id
+    let str = 'Результаты измерений за весь период\n\n'
+
+     // const pressure = new Pressure(ctx)
+    // let arr = await pressure.getStatistic(nDay, 'pressure')
+    // if(arr.length > 0)
+    //     str += await pressure.outArr(arr, 'Давление:\n\n')
+    // else
+    //     str += '\n\nДанные давления не вводились.\n\n'
+
+    // const puls = new Puls(ctx)
+    // arr = await puls.getStatistic(nDay, 'puls')
+    // if(arr.length > 0)
+    //     str += await puls.outArr(arr, '\n\nПульс:\n\n')
+    // else
+    //     str += '\n\nДанные пульса не вводились.\n\n'
+
+    // const temper = new Temper(ctx)
+    // arr = await temper.getStatistic(nDay, 'temper')
+    // if(arr.length > 0)
+    //     str += await temper.outArr(arr, '\n\nТемпература:\n\n')
+    // else
+    //     str += '\n\nДанные температуры не вводились.\n'
+    ctx.session.userId = tId
+
+    await this.saveToFile(ats, fName, arr)
+
+    const file = await fs.readFile(fName)
+    await ctx.sendDocument({ source: fName, filename: fName, caption: 'Сохраните Ваши данные измерений.' })
+
+    return str
+  }
+  //-----------------------------------------------
+  async saveToFile (ats, fName, arr) {
+    const doc = new jsPDF()
+    doc.addFileToVFS('times-normal.ttf', font);
+    doc.addFont('times-normal.ttf', 'times', 'normal');
+    doc.addFileToVFS('NotoMono-Regular-normal.ttf', font_m);
+    doc.addFont('NotoMono-Regular-normal.ttf', 'NotoMono-Regular', 'normal');
+    doc.setFont('times')
+    doc.setFontSize(24)
+    doc.text("Вывод сохраненных данных", 20, 15)
+    doc.setFontSize(12)
+    doc.text(outDateTime(new Date), 160, 15)
+    doc.setFontSize(14)
+    doc.text(`Пациент: ${ats.patient_name}`, 20, 25)
+    doc.setFont('NotoMono-Regular')
+    doc.setFontSize(11)
+
+    let nPage = 0
+    
+    for(const cat of arr) {
+      doc.setFontSize(11)
+      doc.setFont('times')
+      doc.text(cat.name, 20, 30)
+      // console.log('cat.rows =', cat.rows)
+      let lines = cat.rows.split('\n')
+      while(true){
+          let chunk = lines.splice(0, 55 + (nPage > 0? 5: 0))
+          doc.text(chunk.join('\n'), 20, 20 + (nPage == 0? 20: 0))
+          nPage += 1
+          if(lines.length == 0)
+              break
+          doc.addPage()
+      }
+      doc.addPage()
+    }
+    doc.save(fName)
+  }
+  //------------------------------------------------------------------------
 }

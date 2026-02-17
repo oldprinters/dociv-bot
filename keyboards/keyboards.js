@@ -57,7 +57,8 @@ const queryPeriodMenuNaz = () => {
         [
             Markup.button.callback('месяц', 'list_30'),
             Markup.button.callback('последние 10', 'list_last10')
-        ]
+        ],
+        [Markup.button.callback('Скачать PDF с данными', 'list_Pdf')]
         ])
 
     // return Markup.inlineKeyboard([

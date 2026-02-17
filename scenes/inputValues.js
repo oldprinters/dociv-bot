@@ -186,11 +186,25 @@ inputValues.action(/^list_/, async ctx => {
         case '10': params = { days: 10 }; break
         case '30': params = { days: 30 }; break
         case 'last10': params = { last: 10 }; break
+        case 'Pdf': params = { last: -1 }; break
     }
 
+    const titleMap = {
+        3: 'за 3 дня',
+        10: 'за 10 дней',
+        30: 'за месяц',
+        last10: 'последние 10'
+    }
+
+
     const results = await userReportService.build(ctx.from.id, params)
-    for(const cat of results) {
-        await ctx.replyWithHTML(`📊<pre>*** ${cat.name}: ***\n${cat.rows}</pre>`)
+    if(mode === 'Pdf') {
+        // console.log('For PDF: ', results)
+        await userReportService.outPdf(ctx, results)
+    } else {
+        for(const cat of results) {
+            await ctx.replyWithHTML(`📊  "<b>${cat.name}</b>"<i>  ${titleMap[mode]}</i>\n<pre>${cat.rows}</pre>`)
+        }
     }
 })
 

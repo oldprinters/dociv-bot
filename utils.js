@@ -534,6 +534,53 @@ const outResultsFile = async (ctx, nDay = 0) => {
 
     return str
 }
+
+//-----------------------------------------------
+const outResultsFileOld = async (ctx, nDay = 0) => {
+    const ud = new UserData(ctx)
+    const fName = `./prescriptions/list_${ctx.session.patient_id}.pdf`
+
+    let ats = { 
+        patient_id: ctx.session.patient_id,
+        // doc_name: await ud.getFio(),
+        // doc_id: ctx.session.doc_id 
+    }
+    ud.setUserId(ctx.session.patient_id)
+    ats.patient_name = (await ud.readUserData())?.fio ?? null
+
+    const tId = ctx.session.userId
+    ctx.session.userId = ctx.session.patient_id
+    let str = 'Результаты измерений за весь период\n\n'
+
+    const pressure = new Pressure(ctx)
+    let arr = await pressure.getStatistic(nDay, 'pressure')
+    if(arr.length > 0)
+        str += await pressure.outArr(arr, 'Давление:\n\n')
+    else
+        str += '\n\nДанные давления не вводились.\n\n'
+
+    const puls = new Puls(ctx)
+    arr = await puls.getStatistic(nDay, 'puls')
+    if(arr.length > 0)
+        str += await puls.outArr(arr, '\n\nПульс:\n\n')
+    else
+        str += '\n\nДанные пульса не вводились.\n\n'
+
+    const temper = new Temper(ctx)
+    arr = await temper.getStatistic(nDay, 'temper')
+    if(arr.length > 0)
+        str += await temper.outArr(arr, '\n\nТемпература:\n\n')
+    else
+        str += '\n\nДанные температуры не вводились.\n'
+    ctx.session.userId = tId
+
+    saveToFile(ats, fName, str)
+
+    const file = await fs.readFile(fName)
+    await ctx.sendDocument({ source: fName, filename: fName, caption: 'Сохраните Ваши данные измерений.' })
+
+    return str
+}
 //------------------------------------------------
 const raz = (n) => {
     let str = 'раз'

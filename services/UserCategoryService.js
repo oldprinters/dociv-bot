@@ -3,11 +3,11 @@ export default class UserCategoryService {
   constructor(userCategoryController) {
     this.uc = userCategoryController
   }
-
+  //----------------------------------------------------------------------
   async list(userId) {
     return this.uc.getActiveList(userId)
   }
-
+  //----------------------------------------------------------------------
   async disableByIndex(userId, index) {
     const list = await this.list(userId)
 

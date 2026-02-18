@@ -62,8 +62,9 @@ export default class UserReportService {
       // result += `<pre>${cat.name}:\n`
       // result += this.formatRows(rows)
       // result += '</pre>\n'
+      const displayName = cat.name.charAt(0).toUpperCase() + cat.name.slice(1)
       result.push({
-        name: cat.name,
+        name: displayName,
         rows: this.formatRows(rows)
       })
     }
@@ -150,7 +151,9 @@ export default class UserReportService {
       }
       doc.setFont('times')
       doc.setFontSize(14)
-      doc.text(cat.name, 20, Y)
+      // capitalize first letter of category name
+      const title = cat.name.charAt(0).toUpperCase() + cat.name.slice(1)
+      doc.text(title, 20, Y)
       doc.setFontSize(11)
       Y += 10 // Отступ после заголовка
 

@@ -46,9 +46,10 @@ export default class UserInputService {
       raw_value: raw
     })
 
+    const bName = basename.name.charAt(0).toUpperCase() + basename.name.slice(1)
     return {
       ok: true,
-      message: `${basename.name}: ${value} сохранено`
+      message: `${bName}: ${ Number.isFinite(value) && /^-?\d+(\.\d+)?$/.test(raw) ? value : raw }. Сохранено.`
     }
   }
 
@@ -68,8 +69,8 @@ export default class UserInputService {
     return {
       key,
       raw,
-      value: Number.isFinite(value) ? value : null
-    }
+      value: Number.isFinite(value) && /^-?\d+(\.\d+)?$/.test(raw) ? value : null
+    }   
   }
 
   // ========================

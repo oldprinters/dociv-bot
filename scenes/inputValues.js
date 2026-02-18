@@ -71,82 +71,134 @@ inputValues.hears(/^\d{2,3}[\/\\ -\*]\d{2,3}$/, async ctx => {
 })
 //--------------------------------------
 inputValues.hears(/^\d{2,3}[\/\\ -\*]\d{2,3}[\/\\ -\*]\d{2,3}$/, async ctx => {
-    await ctx.reply("Вы ввели давление и пульс: " + ctx.match[0])
-    let str = ctx.match[0].replaceAll(getRazdel(), '/')
-    const pressure = new Pressure(ctx)
-    // console.log("str =", str)
-    // console.log("**** ", str.slice(str.lastIndexOf('/') + 1))
-    let message = await pressure.setValue(ctx, str.slice(0, str.lastIndexOf('/')))
-    await ctx.reply(message)
-    let arr = await pressure.getStatistic(1, 'pressure')
-    await pressure.outStr(ctx, arr)
-    const puls = new Puls(ctx);
-    message = await puls.setValue(ctx, str.slice(str.lastIndexOf('/') + 1))
-    await ctx.reply(message)
-    arr = await puls.getStatistic(1, 'puls')
-    await puls.outStr(ctx, arr)
+     const userInputService = new UserInputService({
+        basenameService: new BaseName('medical'),
+        userCategoryController: new UserCategoryController(),
+        userValueController: new UserValueController(),
+        userController: new Users(ctx),
+        userDataController: new UserData(ctx)
+    })
+    await ctx.reply("Вы ввели давление и пульс: " + ctx.message.text)
+
+    let str = ctx.message.text.replaceAll(getRazdel(), '/')
+    let input = 'давление ' + str.slice(0, str.lastIndexOf('/'))
+ 
+    let result = await userInputService.process(
+        ctx.from.id,
+        input
+    );
+    if(result.message.length > 0)
+        await ctx.reply(result.message);
+    if(!result.ok)
+        await ctx.replyWithHTML(helpText)
+
+    input = `пульс ${str.slice(str.lastIndexOf('/') + 1)}`
+    result = await userInputService.process(
+        ctx.from.id,
+        input
+    );
+    if(result.message.length > 0)
+        await ctx.reply(result.message);
+    if(!result.ok)
+        await ctx.replyWithHTML(helpText)
+
     ctx.scene.reenter()
 })
 //--------------------------------------
 inputValues.hears(/^\d{2,3}$/, async ctx => {
-    await ctx.reply("Вы ввели пульс: " + ctx.match[0])
-    const puls = new Puls(ctx);
-    let message = await puls.setValue(ctx, ctx.match[0])
-    await ctx.reply(message)
-    let arr = await puls.getStatistic(1, 'puls')
-    await puls.outStr(ctx, arr)
+    const input = `пульс ${ctx.message.text}`;
+
+    const userInputService = new UserInputService({
+        basenameService: new BaseName('medical'),
+        userCategoryController: new UserCategoryController(),
+        userValueController: new UserValueController(),
+        userController: new Users(ctx),
+        userDataController: new UserData(ctx)
+    })
+
+    const result = await userInputService.process(
+        ctx.from.id,
+        input
+    );
+
+    if(result.message.length > 0)
+        await ctx.reply(result.message);
+
+    if(!result.ok)
+        await ctx.replyWithHTML(helpText)
+
     ctx.scene.reenter()
 })
 //---------------------------------------
 inputValues.hears(/^[*]+$/, async ctx => {
     const val = ctx.match[0]? ctx.match[0].length : 0;
-    const health = new Health(ctx);
-    let lastDate = await health.getLastDate()
-    if(lastDate == undefined)
-        lastDate = {date: new Date('2011-05-20'), val: 0}
-    let d = new Date(lastDate.date)
-    const dN = new Date()
-    const dT = (dN - d)/3600000 //период в часах
-    if(((dT > 2) && (val != lastDate.val)) || (dT > 5)){
-        let text = `Вы ввели показатель общего состояния: ${val} `
-        if (val == 1) {
-            text += '\n...Вам так плохо... '
-            const aver = await health.getAverage();
-            const count = await health.getCount();
-            if(count > 2) {
-                if(aver > 2.50) 
-                    text += `\nЭто временно. Скоро будет улучшение, желаю Вам благополучия! `
-                else
-                    text += `Наберитесь терпения. Все плохое заканчивается. Не теряйте надежду. `
-            }
+    let text = `Вы ввели показатель общего состояния: ${val} `
+    if (val == 1) {
+        text += '\n...Вам так плохо... '
+        const aver = await health.getAverage();
+        const count = await health.getCount();
+        if(count > 2) {
+            if(aver > 2.50) 
+                text += `\nЭто временно. Скоро будет улучшение, желаю Вам благополучия! `
+            else
+                text += `Наберитесь терпения. Все плохое заканчивается. Не теряйте надежду. `
         }
-        if(val > 5){
-            text += '\n<b>Ура!!!</b>    :-)    я счастлив вместе с Вами!!!'
-        }
-        await ctx.replyWithHTML(text)
-        try {
-            await health.setValue(ctx, val)
-        } catch (e) {
-            console.log(`Ввод состояния пациента. Ошибка: ${e.message}`)
-        }
-        setTimeout(() => {
-            ctx.scene.reenter();
-        }, val == 1? 1500: 10);
-    } else {
-        await ctx.reply("Вы ввели показатель общего состояния.")
-        setTimeout(() => {
-            ctx.scene.reenter();
-        }, 15000);
     }
+    if(val > 5){
+        text += '\n<b>Ура!!!</b>    :-)    я счастлив вместе с Вами!!!'
+    }
+    await ctx.replyWithHTML(text)
+    const input = `самочувствие ${val}`;
+    try {
+        const userInputService = new UserInputService({
+            basenameService: new BaseName('medical'),
+            userCategoryController: new UserCategoryController(),
+            userValueController: new UserValueController(),
+            userController: new Users(ctx),
+            userDataController: new UserData(ctx)
+        })
+
+        const result = await userInputService.process(
+            ctx.from.id,
+            input
+        );
+
+        if(result.message.length > 0)
+            await ctx.reply(result.message);
+
+        if(!result.ok)
+            await ctx.replyWithHTML(helpText)
+    } catch (e) {
+        console.log(`Ввод состояния пациента. Ошибка: ${e.message}`)
+    }
+    ctx.scene.reenter()
 })
 //--------------------------------------
 inputValues.hears(/^\d{2}[.,]\d{0,2}$/, async ctx => {
-    await ctx.reply("Вы ввели температуру: " + ctx.match[0])
-    const temper = new Temper(ctx)
-    const message = await temper.setValue(ctx, ctx.match[0])
-    await ctx.reply(message)
-    const arr = await temper.getStatistic(1, 'temper')
-    await temper.outStr(ctx, arr)
+    // replace comma with dot for consistency
+    const normalized = ctx.message.text.replace(',', '.')
+
+    const input = `температура ${normalized}`;
+
+    const userInputService = new UserInputService({
+        basenameService: new BaseName('medical'),
+        userCategoryController: new UserCategoryController(),
+        userValueController: new UserValueController(),
+        userController: new Users(ctx),
+        userDataController: new UserData(ctx)
+    })
+
+    const result = await userInputService.process(
+        ctx.from.id,
+        input
+    );
+
+    if(result.message.length > 0)
+        await ctx.reply(result.message);
+
+    if(!result.ok)
+        await ctx.replyWithHTML(helpText)
+
     ctx.scene.reenter()
 })
 //--------------------------------------

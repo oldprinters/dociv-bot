@@ -27,7 +27,25 @@ bot.use(session())
 bot.use(stage.middleware())
 
 bot.start(async ctx => {
-    await ctx.replyWithHTML('Для понимания логики работы бота пользуйтесь подсказками\n<b>Меню -> Вызов справки</b> или /help.')
+    await ctx.replyWithHTML(`
+Здравствуйте!
+
+<b>В боте появились новые возможности:</b>
+• добавление произвольных показателей
+• сохранение истории измерений
+• просмотр данных за выбранный период
+
+Пример ввода <i>(ключ и значения разделяйте пробелом)</i>:
+вес 75
+сахар 5.7
+рост 95
+
+
+Для просмотра данных используйте команду /list.
+
+<a href="https://t.me/Petr_Ivanych">напишите мне</a>
+<b>Меню -> Вызов справки</b> или /help.
+`)
 
     if(typeof ctx === 'object' && !Array.isArray(ctx) !== null){
             ctx.session.tlg_user_id = ctx.from.id

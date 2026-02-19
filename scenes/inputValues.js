@@ -58,15 +58,41 @@ inputValues.start(ctx => {
 //--------------------------------------
 inputValues.help( ctx => {
     ctx.replyWithHTML(helpText)
+    ctx.scene.reenter()
 })
 //--------------------------------------
 inputValues.hears(/^\d{2,3}[\/\\ -\*]\d{2,3}$/, async ctx => {
-    await ctx.reply("Вы ввели давление: " + ctx.match[0])
-    const pressure = new Pressure(ctx)
-    const message = await pressure.setValue(ctx, ctx.match[0])
-    await ctx.reply(message)
-    const arr = await pressure.getStatistic(1, 'pressure')
-    await pressure.outStr(ctx, arr)
+    const str = ctx.message.text
+    await ctx.reply("Вы ввели давление: " + str)
+    const [sys, dia] = str.split('/').map(Number)
+    if(sys <= dia) {
+        await ctx.reply(errors[0]);
+    } else if(sys > 250 || sys < 70 || dia > 140 || dia <= 20 ) {
+        await ctx.reply(errors[1]);
+    } else {
+        try {
+            const userInputService = new UserInputService({
+                basenameService: new BaseName('medical'),
+                userCategoryController: new UserCategoryController(),
+                userValueController: new UserValueController(),
+                userController: new Users(ctx),
+                userDataController: new UserData(ctx)
+            })
+
+            let input = 'давление ' + ctx.message.text
+
+            let result = await userInputService.process(
+                ctx.from.id,
+                input
+            );
+            if(result.message.length > 0)
+                await ctx.reply(result.message);
+            if(!result.ok)
+                await ctx.replyWithHTML(helpText)
+        } catch(e) {
+            await ctx.reply(errors[2]);
+        }
+    }
     ctx.scene.reenter()
 })
 //--------------------------------------

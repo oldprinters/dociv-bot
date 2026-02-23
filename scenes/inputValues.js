@@ -159,6 +159,7 @@ inputValues.hears(/^\d{2,3}$/, async ctx => {
 inputValues.hears(/^[*]+$/, async ctx => {
     const val = ctx.match[0]? ctx.match[0].length : 0;
     let text = `Вы ввели показатель общего состояния: ${val} `
+    const health = new Health(ctx)
     if (val == 1) {
         text += '\n...Вам так плохо... '
         const aver = await health.getAverage();

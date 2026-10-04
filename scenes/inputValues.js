@@ -434,7 +434,7 @@ inputValues.on('text', async ctx => {
         await ctx.reply(result.message);
     }
 
-    if (!result.ok && result.code !== 'RAW_VALUE_TOO_LONG') {
+    if (!result.ok && result.code !== 'USER_VALUE_RAW_MAX_LENGTH') {
         await ctx.replyWithHTML(helpText);
     }
 

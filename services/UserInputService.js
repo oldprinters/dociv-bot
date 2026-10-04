@@ -33,7 +33,7 @@ export default class UserInputService {
 
     const rawLength = unicodeLength(raw);
 
-    if (rawLength > RAW_VALUE_MAX_LENGTH) {
+    if (rawLength > USER_VALUE_RAW_MAX_LENGTH) {
       return {
         ok: false,
         code: 'RAW_VALUE_TOO_LONG',

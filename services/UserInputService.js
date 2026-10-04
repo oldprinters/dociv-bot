@@ -1,3 +1,9 @@
+import { USER_VALUE_RAW_MAX_LENGTH } from '../config/limits.js';
+    
+function unicodeLength(value = '') {
+    return [...String(value)].length;
+}
+
 export default class UserInputService {
 
   constructor({
@@ -23,11 +29,24 @@ export default class UserInputService {
     if (!parsed)
       return { ok: false, message: '' }
 
-    const { key, value, raw } = parsed
+    const { key, value, raw } = parsed;
 
-    let basename = { id: 0, name: key }
+    const rawLength = unicodeLength(raw);
 
-    basename.id = await this.basename.findByPrefix(key) //поиск категории по префиксу
+    if (rawLength > RAW_VALUE_MAX_LENGTH) {
+      return {
+        ok: false,
+        code: 'RAW_VALUE_TOO_LONG',
+        message:
+          `Значение слишком длинное: ${rawLength} из ` +
+          `${RAW_VALUE_MAX_LENGTH} символов.\n\n` +
+          'Сократите значение и отправьте его ещё раз.'
+      };
+    }
+
+    let basename = { id: 0, name: key };
+
+    basename.id = await this.basename.findByPrefix(key);
 
     if (!basename.id) {
       const allow = await this.canCreateCategory(userId)  //проверка возможности создать новую категорию
@@ -40,11 +59,38 @@ export default class UserInputService {
     const catResult = await this.ensureCategory(userId, basename.id)
     if (!catResult.ok) return catResult
 
-    await this.userValue.insert({
-      user_category_id: catResult.user_category_id,
-      value,
-      raw_value: raw
-    })
+    try {
+      await this.userValue.insert({
+        user_category_id: catResult.user_category_id,
+        value,
+        raw_value: raw
+      });
+    } catch (error) {
+      console.error('Не удалось сохранить пользовательское значение', {
+        code: error.code,
+        errno: error.errno,
+        sqlState: error.sqlState,
+        userId,
+        userCategoryId: catResult.user_category_id,
+        rawLength
+      });
+
+      if (error.code === 'ER_DATA_TOO_LONG') {
+        return {
+          ok: false,
+          code: 'RAW_VALUE_TOO_LONG',
+          message:
+            `Значение превышает допустимый размер — ${RAW_VALUE_MAX_LENGTH} символов. ` +
+            'Сократите его и отправьте ещё раз.'
+        };
+      }
+
+      return {
+        ok: false,
+        code: 'USER_VALUE_SAVE_ERROR',
+        message: 'Не удалось сохранить значение. Попробуйте ещё раз.'
+      };
+    }
 
     const bName = basename.name.charAt(0).toUpperCase() + basename.name.slice(1)
     return {

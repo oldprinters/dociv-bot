@@ -430,13 +430,15 @@ inputValues.on('text', async ctx => {
         input
     );
 
-    if(result.message.length > 0)
+    if (result.message.length > 0) {
         await ctx.reply(result.message);
+    }
 
-    if(!result.ok)
-        await ctx.replyWithHTML(helpText)
+    if (!result.ok && result.code !== 'RAW_VALUE_TOO_LONG') {
+        await ctx.replyWithHTML(helpText);
+    }
 
-    ctx.scene.reenter()
+    await ctx.scene.reenter();
 })
 
 export default inputValues

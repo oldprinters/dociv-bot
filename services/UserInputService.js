@@ -39,7 +39,7 @@ export default class UserInputService {
         code: 'RAW_VALUE_TOO_LONG',
         message:
           `Значение слишком длинное: ${rawLength} из ` +
-          `${RAW_VALUE_MAX_LENGTH} символов.\n\n` +
+          `${USER_VALUE_RAW_MAX_LENGTH} символов.\n\n` +
           'Сократите значение и отправьте его ещё раз.'
       };
     }
